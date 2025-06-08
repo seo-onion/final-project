@@ -1,0 +1,61 @@
+app: proyecto-final
+org: seonion
+
+
+service: api-usuarios
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  timeout: 30
+  iam:
+    role: arn:aws:iam::659277875740:role/LabRole
+
+  httpApi:
+    createDefaultStage: false     
+    stageName: ${opt:stage}      
+
+
+functions:
+  register:
+    name: CreateProduct
+    handler: Lambda_CrearProductos.lambda_handler
+    events:
+      - http:
+          path: /product/create
+          method: post
+          cors: true
+          integration: lambda   
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+resources:
+  Resources:
+    ProductosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: t_producto
+        AttributeDefinitions:
+          - AttributeName: tenancy_id
+            AttributeType: S
+          - AttributeName: sort_id
+            AttributeType: S
+          - AttributeName: sku
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tenancy_id
+            KeyType: HASH
+          - AttributeName: sort_id
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: SkuIndex
+            KeySchema:
+              - AttributeName: tenancy_id
+                KeyType: HASH
+              - AttributeName: sku
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
