@@ -31,5 +31,5 @@ jobs:
       - name: Deploy ${{ matrix.service }}
         working-directory: ./${{ matrix.service }}
         run: |
-          npm ci
+          npm install
           npx serverless deploy --stage ${{ github.ref_name }}
