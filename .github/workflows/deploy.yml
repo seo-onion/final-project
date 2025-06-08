@@ -31,15 +31,17 @@ jobs:
           aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region:            us-east-1
 
-      - name: Install service dependencies
+      - name: Install Python plugin (api-usuarios)
+        if: ${{ matrix.service == 'api-usuarios' }}
         working-directory: ./${{ matrix.service }}
         run: |
-          if [ "${{ matrix.service }}" = "api-usuarios" ]; then
-            npm init -y
-            npm install --save-dev serverless-python-requirements
-          else
-            npm ci
-          fi
+          npm init -y
+          npm install --save-dev serverless-python-requirements
+
+      - name: Install Node deps (api-productos)
+        if: ${{ matrix.service == 'api-productos' }}
+        working-directory: ./${{ matrix.service }}
+        run: npm ci
 
       - name: Deploy ${{ matrix.service }}
         working-directory: ./${{ matrix.service }}
