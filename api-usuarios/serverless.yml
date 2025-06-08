@@ -1,6 +1,5 @@
 app: proyecto-final
 org: seonion
-frameworkVersion: '>=4.0.0 <5.0.0'
 
 
 service: api-usuarios
