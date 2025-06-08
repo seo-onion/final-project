@@ -20,7 +20,7 @@ functions:
   register:
     handler: Lambda_UserCreate.lambda_handler
     events:
-      - httpApi:
+      - http:
           path: /user/register
           method: post
           cors: true
@@ -29,7 +29,7 @@ functions:
   login:
     handler: Lambda_UserLogin.lambda_handler
     events:
-      - httpApi:
+      - http:
           path: /user/login
           method: post
           cors: true
