@@ -26,6 +26,15 @@ functions:
           cors: true
           integration: lambda
 
+  login:
+    handler: Lambda_UserLogin.lambda_handler
+    events:
+      - httpApi:
+          path: /user/login
+          method: post
+          cors: true
+          integration: lambda
+
 resources:
   Resources:
     UsuariosTable:
@@ -54,6 +63,25 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+    
+    AccesosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: t_tokens_access
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+          - AttributeName: token
+            AttributeType: S
+          - AttributeName: date
+            AttributeType: S
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: expires_ts
+          Enabled: true
 
 plugins:
   - serverless-python-requirements
