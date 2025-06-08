@@ -9,15 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
-          - service: api-usuarios
-            lang: python
-          - service: api-productos
-            lang: node
+        service: [ api-usuarios, api-productos ]
 
     env:
       SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-      AWS_REGION: us-east-1
 
     steps:
       - uses: actions/checkout@v3
@@ -34,46 +29,18 @@ jobs:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region:            ${{ env.AWS_REGION }}
+          aws-region:            us-east-1
 
-      # --- pasos para Python only ---
-      - name: Set up Python
-        if: matrix.lang == 'python'
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-
-      - name: Install Python deps
-        if: matrix.lang == 'python'
+      - name: Install service dependencies
         working-directory: ./${{ matrix.service }}
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ "${{ matrix.service }}" = "api-usuarios" ]; then
+            npm init -y
+            npm install --save-dev serverless-python-requirements
+          else
+            npm ci
+          fi
 
-      - name: Install Python plugin
-        if: matrix.lang == 'python'
-        working-directory: ./${{ matrix.service }}
-        run: |
-          npm init -y
-          npm install --save-dev serverless-python-requirements
-
-      # --- pasos para Node only ---
-      - name: Install Node deps
-        if: matrix.lang == 'node'
-        working-directory: ./${{ matrix.service }}
-        run: npm install
-
-      - name: Install Node plugins (if any)
-        if: matrix.lang == 'node'
-        working-directory: ./${{ matrix.service }}
-        run: |
-          npm init -y
-          # instala aquí plugins de serverless específicos para JS, si los usas
-          # npm install --save-dev serverless-offline
-
-      # --- deploy en ambos casos ---
       - name: Deploy ${{ matrix.service }}
         working-directory: ./${{ matrix.service }}
         run: sls deploy --stage ${{ github.ref_name }}
