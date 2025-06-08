@@ -11,12 +11,17 @@ provider:
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
 
+  httpApi:
+    createDefaultStage: false     
+    stageName: ${opt:stage}      
+
+
 functions:
   register:
     handler: Lambda_UserCreate.lambda_handler
     events:
       - httpApi:
-          path: /user/register
+          path: /user/register/
           method: post
           cors: true
           integration: lambda
