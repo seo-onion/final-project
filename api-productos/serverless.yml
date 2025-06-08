@@ -2,7 +2,7 @@ app: proyecto-final
 org: seonion
 
 
-service: api-usuarios
+service: api-productos
 
 provider:
   name: aws
