@@ -6,30 +6,26 @@ service: api-usuarios
 
 provider:
   name: aws
-  runtime: python3.9
-  region: us-east-1
+  runtime: python3.12
+  timeout: 30
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
 
-  httpApi:
-    cors:
-      allowedOrigins: ['*']                   
-      allowedMethods: ['OPTIONS','GET','POST'] 
-      allowedHeaders: ['*']
-
 functions:
   register:
-    handler: handler.lambda_handler
+    handler: Lambda_UserCreate.lambda_handler
     events:
       - httpApi:
           path: /user/register
           method: post
+          cors: true
+          integration: lambda
 
 resources:
   Resources:
     UsuariosTable:
       Type: AWS::DynamoDB::Table
-      Properties:
+      Properties: 
         TableName: t_usuarios
         AttributeDefinitions:
           - AttributeName: tenant_id
