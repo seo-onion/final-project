@@ -8,6 +8,8 @@ provider:
   name: aws
   runtime: python3.9
   region: us-east-1
+  iam:
+    role: arn:aws:iam::659277875740:role/LabRole
 
 functions:
   register:
