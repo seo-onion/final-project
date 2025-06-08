@@ -15,10 +15,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Set up Node.js & Serverless
         uses: actions/setup-node@v3
         with:
           node-version: '22'
+      - run: npm install -g serverless
 
       - name: Configure AWS creds
         uses: aws-actions/configure-aws-credentials@v2
@@ -31,5 +32,4 @@ jobs:
       - name: Deploy ${{ matrix.service }}
         working-directory: ./${{ matrix.service }}
         run: |
-          npm install
-          npx serverless deploy --stage ${{ github.ref_name }}
+          sls deploy --stage ${{ github.ref_name }}
