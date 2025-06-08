@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [ api-compras, api-productos, api-usuarios ]
+        service: [ api-usuarios ]
 
     steps:
       - name: Checkout repo
@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Configure AWS creds
         uses: aws-actions/configure-aws-credentials@v2
