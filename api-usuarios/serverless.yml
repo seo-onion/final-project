@@ -69,11 +69,7 @@ resources:
       Properties:
         TableName: t_tokens_access
         AttributeDefinitions:
-          - AttributeName: email
-            AttributeType: S
           - AttributeName: token
-            AttributeType: S
-          - AttributeName: date
             AttributeType: S
         KeySchema:
           - AttributeName: token
