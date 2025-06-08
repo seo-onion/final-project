@@ -34,6 +34,10 @@ functions:
           method: post
           cors: true
           integration: lambda
+  
+  validateToken:
+    handler: Lambda_ValidateTokenAccess.lambda_handler
+
 
 resources:
   Resources:
