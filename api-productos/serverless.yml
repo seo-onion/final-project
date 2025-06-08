@@ -17,7 +17,7 @@ provider:
 
 
 functions:
-  register:
+  create:
     name: CreateProduct
     handler: Lambda_CrearProductos.lambda_handler
     events:
