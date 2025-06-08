@@ -18,6 +18,7 @@ provider:
 
 functions:
   register:
+    name: CreateUser
     handler: Lambda_UserCreate.lambda_handler
     events:
       - http:
@@ -27,6 +28,7 @@ functions:
           integration: lambda
 
   login:
+    name: LoginUser
     handler: Lambda_UserLogin.lambda_handler
     events:
       - http:
@@ -36,6 +38,7 @@ functions:
           integration: lambda
   
   validateToken:
+    name: ValidateToken
     handler: Lambda_ValidateTokenAccess.lambda_handler
 
 
