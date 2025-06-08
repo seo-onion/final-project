@@ -11,6 +11,12 @@ provider:
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
 
+  httpApi:
+    cors:
+      allowedOrigins: ['*']                   
+      allowedMethods: ['OPTIONS','GET','POST'] 
+      allowedHeaders: ['*']
+
 functions:
   register:
     handler: handler.lambda_handler
