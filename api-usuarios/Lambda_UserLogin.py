@@ -70,7 +70,7 @@ def lambda_handler(event, context):
     }
 
     # 7) Guardar token en DynamoDB
-    tokens_tbl = dynamodb.Table('t_tokens_access')
+    tokens_tbl = dynamodb.Table('t_access_token')
     tokens_tbl.put_item(Item=registro)
 
     # 8) Responder

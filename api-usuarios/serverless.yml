@@ -70,7 +70,7 @@ resources:
     AccesosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: t_tokens_access
+        TableName: t_access_token
         AttributeDefinitions:
           - AttributeName: token
             AttributeType: S

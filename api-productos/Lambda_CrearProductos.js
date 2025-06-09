@@ -11,6 +11,7 @@ module.exports.crearProducto = async (event) => {
     if (!authHeader) {
       return { statusCode: 401, body: 'Missing Authorization header' };
     }
+    
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
     // 2. Invocar tu Lambda de validación de token
