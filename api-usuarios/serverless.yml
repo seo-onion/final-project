@@ -9,7 +9,7 @@ provider:
   runtime: python3.12
   timeout: 29
   iam:
-    role: arn:aws:iam::659277875740:role/LabRole       
+    role: arn:aws:iam::659277875740:role/LabRole         
 
 
 functions:
