@@ -8,6 +8,8 @@ provider:
   name: aws
   runtime: nodejs22.x
   timeout: 30
+  apiGateway:
+    timeout: 30
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
 
@@ -36,7 +38,8 @@ resources:
     ProductosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: t_producto
+        TableName:
+          Fn::ImportValue: ExistingTableExportName
         AttributeDefinitions:
           - AttributeName: tenancy_id
             AttributeType: S
