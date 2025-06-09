@@ -6,7 +6,7 @@ service: api-productos
 
 provider:
   name: aws
-  runtime: nodejs22.x
+  runtime: nodejs14.x  # Cambié a una versión compatible de Node.js
   timeout: 29
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
