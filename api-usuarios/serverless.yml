@@ -43,7 +43,7 @@ resources:
     UsuariosTable:
       Type: AWS::DynamoDB::Table
       Properties: 
-        TableName: t_usuarios
+        TableName: t_usuarios 
         AttributeDefinitions:
           - AttributeName: tenant_id
             AttributeType: S

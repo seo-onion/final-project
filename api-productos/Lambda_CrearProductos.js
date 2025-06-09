@@ -1,6 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const lambda = new AWS.Lambda();
 const { v4: uuidv4 } = require('uuid');
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -11,7 +12,6 @@ module.exports.crearProducto = async (event) => {
     if (!authHeader) {
       return { statusCode: 401, body: 'Missing Authorization header' };
     }
-    
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
     // 2. Invocar tu Lambda de validación de token
@@ -73,10 +73,10 @@ module.exports.crearProducto = async (event) => {
       body: JSON.stringify({
         message: 'Producto creado',
         producto: {
-          tenant_id: tenantId,
+          tenant_id: tenant_id,
           sku,
           nombre,
-          sort_id: sortId
+          sort_id: sort_id
         }
       })
     };
