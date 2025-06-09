@@ -11,10 +11,6 @@ provider:
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
 
-  httpApi:
-    stage: ${opt:stage}      
-
-
 functions:
   create:
     name: CreateProduct
