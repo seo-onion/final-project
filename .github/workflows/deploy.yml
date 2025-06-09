@@ -9,18 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [ api-usuarios, api-productos ]
+        service: [api-usuarios, api-productos]
 
     env:
       SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-
+      
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up Node.js & Serverless
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
       - run: npm install -g serverless
 
       - name: Configure AWS creds
@@ -28,20 +28,23 @@ jobs:
         with:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}  # Este paso solo es necesario si usas credenciales temporales
           aws-region:            us-east-1
 
+      # Instalar dependencias Python solo para api-usuarios
       - name: Install Python plugin (api-usuarios)
         if: ${{ matrix.service == 'api-usuarios' }}
         working-directory: ./${{ matrix.service }}
         run: |
           npm init -y
           npm install --save-dev serverless-python-requirements
+          pip install -r requirements.txt  # Asegúrate de instalar dependencias de Python
 
+      # Instalar dependencias de Node.js solo para api-productos
       - name: Install Node deps (api-productos)
         if: ${{ matrix.service == 'api-productos' }}
         working-directory: ./${{ matrix.service }}
-        run: npm ci
+        run: npm install
 
       - name: Deploy ${{ matrix.service }}
         working-directory: ./${{ matrix.service }}
