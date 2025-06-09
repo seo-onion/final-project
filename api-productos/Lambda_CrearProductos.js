@@ -31,7 +31,7 @@ module.exports.crearProducto = async (event) => {
 
     const {
       tenant_id,
-      nombre,
+      nombre, 
       precio,
       descripcion
     } = JSON.parse(event.body);
@@ -88,7 +88,7 @@ module.exports.crearProducto = async (event) => {
       statusCode: status,
       body: status === 409
         ? 'Ya existe un producto con ese nombre en este tenant'
-        : 'Error interno'
+        : `Error interno: ${error.message}`
     };
   }
 };
