@@ -7,7 +7,7 @@ const db = new AWS.DynamoDB.DocumentClient();
 
 module.exports.crearProducto = async (event) => {
   try {
-    
+
     const authHeader = event.headers.Authorization || event.headers.authorization;
     if (!authHeader) {
       return { statusCode: 401, body: 'Missing Authorization header' };
@@ -16,7 +16,7 @@ module.exports.crearProducto = async (event) => {
 
     // 2. Invocar tu Lambda de validación de token
     const validateResp = await lambda.invoke({
-      FunctionName: 'ValidateToken', 
+      FunctionName: 'ValidateToken',
       InvocationType: 'RequestResponse',
       Payload: JSON.stringify({ token })
     }).promise();
@@ -31,7 +31,7 @@ module.exports.crearProducto = async (event) => {
 
     const {
       tenant_id,
-      nombre, 
+      nombre,
       precio,
       descripcion
     } = JSON.parse(event.body);
@@ -45,13 +45,13 @@ module.exports.crearProducto = async (event) => {
     }
 
     // 3. Generar SKU
-    const sku = uuidv4().split('-')[0];  // p.ej. "9f1c2b4a"
+    const sku = uuidv4().split('-')[0];
 
     // 4. Construir sort_id y el item completo
     const sort_id = `${sku}#${nombre}`;
 
     const item = {
-      tenant_id: tenant_id,
+      tenant_id,
       sort_id,
       sku,
       nombre,
@@ -73,7 +73,7 @@ module.exports.crearProducto = async (event) => {
       body: JSON.stringify({
         message: 'Producto creado',
         producto: {
-          tenant_id: tenant_id,
+          tenant_id,
           sku,
           nombre,
           sort_id: sort_id
@@ -83,12 +83,12 @@ module.exports.crearProducto = async (event) => {
 
   } catch (error) {
     console.error('Error creando producto:', error);
-    const status = error.code === 'ConditionalCheckFailedException' ? 409 : 500;
     return {
-      statusCode: status,
-      body: status === 409
-        ? 'Ya existe un producto con ese nombre en este tenant'
-        : `Error interno: ${error.message}`
+      statusCode: 500,
+      body: JSON.stringify({
+        message: `Error interno: ${error.message}`,
+        stack: error.stack  // Esto te dará más detalles sobre el error
+      })
     };
   }
 };
