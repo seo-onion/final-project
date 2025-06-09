@@ -8,8 +8,6 @@ provider:
   name: aws
   runtime: python3.12
   timeout: 30
-  apiGateway:
-    timeout: 30
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
 
