@@ -12,8 +12,7 @@ provider:
     role: arn:aws:iam::659277875740:role/LabRole
 
   httpApi:
-    createDefaultStage: false     
-    stageName: ${opt:stage}      
+    stage: ${opt:stage}      
 
 
 functions:
