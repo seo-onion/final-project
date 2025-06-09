@@ -35,7 +35,7 @@ functions:
   
   validateToken:
     name: ValidateToken
-    handler: Lambda_ValidateTokenAccess.lambda_handler
+    handler: Lambda_ValidateAccessToken.lambda_handler
 
 
 resources:

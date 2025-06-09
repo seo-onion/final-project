@@ -51,7 +51,7 @@ module.exports.crearProducto = async (event) => {
     const sort_id = `${sku}#${nombre}`;
 
     const item = {
-      tenancy_id: tenant_id,
+      tenant_id: tenant_id,
       sort_id,
       sku,
       nombre,

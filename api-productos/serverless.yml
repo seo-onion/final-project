@@ -33,14 +33,14 @@ resources:
       Properties:
         TableName: t_producto
         AttributeDefinitions:
-          - AttributeName: tenancy_id
+          - AttributeName: tenant_id
             AttributeType: S
           - AttributeName: sort_id
             AttributeType: S
           - AttributeName: sku
             AttributeType: S
         KeySchema:
-          - AttributeName: tenancy_id
+          - AttributeName: tenant_id
             KeyType: HASH
           - AttributeName: sort_id
             KeyType: RANGE
@@ -48,7 +48,7 @@ resources:
         GlobalSecondaryIndexes:
           - IndexName: SkuIndex
             KeySchema:
-              - AttributeName: tenancy_id
+              - AttributeName: tenant_id
                 KeyType: HASH
               - AttributeName: sku
                 KeyType: RANGE
