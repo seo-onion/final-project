@@ -38,8 +38,7 @@ resources:
     ProductosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName:
-          Fn::ImportValue: ExistingTableExportName
+        TableName: t_productos-dev
         AttributeDefinitions:
           - AttributeName: tenancy_id
             AttributeType: S
