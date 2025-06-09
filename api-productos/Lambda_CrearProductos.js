@@ -87,7 +87,7 @@ module.exports.crearProducto = async (event) => {
       statusCode: 500,
       body: JSON.stringify({
         message: `Error interno: ${error.message}`,
-        stack: error.stack  // Esto te dará más detalles sobre el error
+        stack: error.stack  
       })
     };
   }
