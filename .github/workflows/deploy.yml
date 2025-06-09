@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [api-usuarios, api-productos]
+        service: [api-productos, api-usuarios]
 
     env:
       SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
@@ -31,6 +31,12 @@ jobs:
           aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}  # Este paso solo es necesario si usas credenciales temporales
           aws-region:            us-east-1
 
+        # Eliminar los recursos existentes antes de desplegar
+      - name: Remove existing resources
+        run: sls remove --stage dev --config ./api-productos/serverless.yml  # Esto eliminará los recursos para api-productos
+        continue-on-error: true # Esto permitirá continuar aunque el paso falle
+
+
       # Instalar dependencias Python solo para api-usuarios
       - name: Install Python plugin (api-usuarios)
         if: ${{ matrix.service == 'api-usuarios' }}
@@ -48,4 +54,4 @@ jobs:
 
       - name: Deploy ${{ matrix.service }}
         working-directory: ./${{ matrix.service }}
-        run: sls deploy --stage ${{ github.ref_name }}
+        run: sls deploy --stage ${{ github.ref_name }} --debug
