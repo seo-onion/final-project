@@ -31,7 +31,7 @@ resources:
     ProductosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: t_productos-dev
+        TableName: t_productos
         AttributeDefinitions:
           - AttributeName: tenancy_id
             AttributeType: S
