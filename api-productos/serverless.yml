@@ -7,7 +7,7 @@ service: api-productos
 provider:
   name: aws
   runtime: nodejs22.x
-  timeout: 30
+  timeout: 29
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
 
