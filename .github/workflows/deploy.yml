@@ -35,7 +35,7 @@ jobs:
       # - name: Remove existing resources
       #   run: sls remove --stage dev --config ./api-productos/serverless.yml  # Esto eliminará los recursos para api-productos
       #   continue-on-error: true # Esto permitirá continuar aunque el paso falle
-
+          
 
       # Instalar dependencias Python solo para api-usuarios
       - name: Install Python plugin (api-usuarios)
