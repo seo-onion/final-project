@@ -26,6 +26,20 @@ functions:
               headers:
                 Authorization: true
 
+  findBySku:
+    name: FindProduct
+    handler: Lambda_FindProduct.lambda_handler
+    events:
+      - http:
+          path: /product/find
+          method: get
+          cors: true
+          integration: lambda   
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
 resources:
   Resources:
     ProductosTable:
