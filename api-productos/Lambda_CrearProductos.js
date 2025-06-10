@@ -1,11 +1,11 @@
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 
 const lambda = new LambdaClient({});
 const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
-export const lambda_handler = async (event) => {
+module.exports.lambda_handler = async (event) => {
   try {
     const authHeader = event.headers.Authorization || event.headers.authorization;
     if (!authHeader) {
