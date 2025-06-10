@@ -1,25 +1,24 @@
-'use strict';
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 
-const AWS = require('aws-sdk');
+const lambda = new LambdaClient({});
+const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
-module.exports.lambda_handler = async (event) => {
+export const lambda_handler = async (event) => {
   try {
-    const lambda = new AWS.Lambda();
-    const db = new AWS.DynamoDB.DocumentClient();
-
     const authHeader = event.headers.Authorization || event.headers.authorization;
     if (!authHeader) {
       return { statusCode: 401, body: 'Missing Authorization header' };
     }
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
-    const validateResp = await lambda.invoke({
+    const validateResp = await lambda.send(new InvokeCommand({
       FunctionName: 'ValidateToken',
-      InvocationType: 'RequestResponse',
-      Payload: JSON.stringify({ token })
-    }).promise();
+      Payload: JSON.stringify({ token }),
+    }));
 
-    const payload = JSON.parse(validateResp.Payload);
+    const payload = JSON.parse(new TextDecoder().decode(validateResp.Payload));
     if (payload.statusCode === 403) {
       return {
         statusCode: 403,
@@ -35,9 +34,7 @@ module.exports.lambda_handler = async (event) => {
       return { statusCode: 400, body: 'El campo "nombre" es obligatorio' };
     }
 
-    // Generar SKU simple sin uuid
     const sku = Date.now().toString(36);
-
     const sort_id = `${sku}#${nombre}`;
 
     const item = {
@@ -50,11 +47,11 @@ module.exports.lambda_handler = async (event) => {
       createdAt: new Date().toISOString()
     };
 
-    await db.put({
+    await db.send(new PutCommand({
       TableName: "t_producto",
       Item: item,
       ConditionExpression: 'attribute_not_exists(sort_id)'
-    }).promise();
+    }));
 
     return {
       statusCode: 201,
