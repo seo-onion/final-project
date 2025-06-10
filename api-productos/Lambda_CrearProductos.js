@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.crearProducto = async (event) => {
+module.exports.lambda_handler = async (event) => {
   try {
     const lambda = new AWS.Lambda();
     const db = new AWS.DynamoDB.DocumentClient();
