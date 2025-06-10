@@ -1,12 +1,9 @@
 'use strict';
 
-const { v4: uuidv4 } = require('uuid');
-
-const lambda = new AWS.Lambda();
-const db = new AWS.DynamoDB.DocumentClient();
-
 module.exports.crearProducto = async (event) => {
   try {
+    const lambda = new AWS.Lambda();
+    const db = new AWS.DynamoDB.DocumentClient();
 
     const authHeader = event.headers.Authorization || event.headers.authorization;
     if (!authHeader) {
@@ -14,7 +11,6 @@ module.exports.crearProducto = async (event) => {
     }
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
-    // 2. Invocar tu Lambda de validación de token
     const validateResp = await lambda.invoke({
       FunctionName: 'ValidateToken',
       InvocationType: 'RequestResponse',
@@ -29,25 +25,17 @@ module.exports.crearProducto = async (event) => {
       };
     }
 
-    const {
-      tenant_id,
-      nombre,
-      precio,
-      descripcion
-    } = JSON.parse(event.body);
-
-    // 2. Parse body y validar nombre
+    const { tenant_id, nombre, precio, descripcion } = JSON.parse(event.body);
     if (!tenant_id) {
-      return { statusCode: 400, body: 'El campo "categoría" es obligatorio' };
+      return { statusCode: 400, body: 'El campo "tenant_id" es obligatorio' };
     }
     if (!nombre) {
       return { statusCode: 400, body: 'El campo "nombre" es obligatorio' };
     }
 
-    // 3. Generar SKU
-    const sku = uuidv4().split('-')[0];
+    // Generar SKU simple sin uuid
+    const sku = Date.now().toString(36);
 
-    // 4. Construir sort_id y el item completo
     const sort_id = `${sku}#${nombre}`;
 
     const item = {
@@ -60,24 +48,17 @@ module.exports.crearProducto = async (event) => {
       createdAt: new Date().toISOString()
     };
 
-    // 5. Insertar en DynamoDB
     await db.put({
       TableName: "t_producto",
       Item: item,
       ConditionExpression: 'attribute_not_exists(sort_id)'
     }).promise();
 
-    // 6. Responder
     return {
       statusCode: 201,
       body: JSON.stringify({
         message: 'Producto creado',
-        producto: {
-          tenant_id,
-          sku,
-          nombre,
-          sort_id: sort_id
-        }
+        producto: { tenant_id, sku, nombre, sort_id }
       })
     };
 
@@ -87,7 +68,7 @@ module.exports.crearProducto = async (event) => {
       statusCode: 500,
       body: JSON.stringify({
         message: `Error interno: ${error.message}`,
-        stack: error.stack  
+        stack: error.stack
       })
     };
   }
