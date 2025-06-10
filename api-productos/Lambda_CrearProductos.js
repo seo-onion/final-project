@@ -1,5 +1,7 @@
 'use strict';
 
+const AWS = require('aws-sdk');
+
 module.exports.lambda_handler = async (event) => {
   try {
     const lambda = new AWS.Lambda();
