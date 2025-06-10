@@ -1,8 +1,8 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const lambda = new AWS.Lambda();
 const { v4: uuidv4 } = require('uuid');
+
+const lambda = new AWS.Lambda();
 const db = new AWS.DynamoDB.DocumentClient();
 
 module.exports.crearProducto = async (event) => {
