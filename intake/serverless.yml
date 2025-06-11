@@ -80,8 +80,8 @@ custom:
     compras: tu-bucket-compras-${self:provider.stage}  # Ejemplo: tu-bucket-compras-prod
 
   elasticsearch:
-    plaza_vea: http://<IP_VM>:9200  # Reemplaza con la IP real de tu VM
-    otro_tenant: http://<IP_VM>:9201  # Reemplaza con la IP real de tu VM
+    plaza_vea: http://18.212.49.118:9200
+    otro_tenant: http://18.212.49.118:9201
 
   dynamodb:
     t_productos:
