@@ -34,7 +34,7 @@ functions:
           path: /product/find
           method: get
           cors: true
-          integration: lambda-proxy
+          integration: lambda-proxy 
           request:
             parameters:
               headers:
