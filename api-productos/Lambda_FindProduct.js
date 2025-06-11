@@ -3,7 +3,7 @@ const {
   LambdaClient, InvokeCommand
 } = require('@aws-sdk/client-lambda');
 const {
-  DynamoDBClient, ListTablesCommand
+  DynamoDBClient, ListTablesCommand, ScanCommand
 } = require('@aws-sdk/client-dynamodb');
 const {
   DynamoDBDocumentClient
@@ -42,11 +42,14 @@ module.exports.lambda_handler = async (event) => {
     // 4. Escanear cada tabla que empiece por 't_producto'
     for (const TableName of TableNames) {
       if (!TableName.startsWith('t_producto')) continue;
-      const { Items = [] } = await db.scan({
+
+      const scanResult = await ddbRaw.send(new ScanCommand({
         TableName,
         FilterExpression: 'sku = :s',
         ExpressionAttributeValues: { ':s': sku }
-      });
+      }));
+      const Items = scanResult.Items || [];
+
       if (Items.length > 0) {
         // Devolver primer match (puedes devolver todos si prefieres)
         return {
@@ -61,7 +64,7 @@ module.exports.lambda_handler = async (event) => {
     }
 
     // 5. Si no encuentra en ninguna tabla
-    return { statusCode: 404, body: JSON.stringify({ message: 'Producto no encontrado' }) };
+    return { statusCode: 404, body: JSON.stringify({ message: 'Producto no encontrado', producto: null }) };
 
   } catch (error) {
     console.error('Error buscando producto global:', error);
