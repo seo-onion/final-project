@@ -1,76 +1,74 @@
 'use strict';
-
-const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
-
+const {
+  LambdaClient, InvokeCommand
+} = require('@aws-sdk/client-lambda');
+const {
+  DynamoDBClient, ListTablesCommand
+} = require('@aws-sdk/client-dynamodb');
+const {
+  DynamoDBDocumentClient
+} = require('@aws-sdk/lib-dynamodb');
 
 const lambda = new LambdaClient({});
-const client = new DynamoDBClient({});
-const db = DynamoDBDocumentClient.from(client);
+const ddbRaw = new DynamoDBClient({});
+const db = DynamoDBDocumentClient.from(ddbRaw);
 
 module.exports.lambda_handler = async (event) => {
   try {
-    // Obtener el token de la cabecera de autorización
-    const authHeader = event.headers.Authorization || event.headers.authorization;
-    if (!authHeader) {
-      return { statusCode: 401, body: 'Missing Authorization header' };
+    // 1. Validación de token
+    const auth = event.headers.Authorization || event.headers.authorization;
+    if (!auth) {
+      return { statusCode: 401, body: JSON.stringify({ message: 'Missing Authorization header' }) };
     }
-    const token = authHeader.replace(/^Bearer\s+/i, '');
-
-
-    const validateResp = await lambda.send(new InvokeCommand({
-      FunctionName: 'ValidateToken',
+    const token = auth.replace(/^Bearer\s+/i, '');
+    const respVal = await lambda.send(new InvokeCommand({
+      FunctionName: process.env.VALIDATE_TOKEN_FN,
       Payload: JSON.stringify({ token }),
     }));
-
-    const payload = JSON.parse(new TextDecoder().decode(validateResp.Payload));
-    if (payload.statusCode === 403) {
-      return {
-        statusCode: 403,
-        body: JSON.stringify({ message: 'Forbidden - Token inválido o expirado' })
-      };
+    const { statusCode } = JSON.parse(new TextDecoder().decode(respVal.Payload));
+    if (statusCode === 403) {
+      return { statusCode: 403, body: JSON.stringify({ message: 'Forbidden – Token inválido o expirado' }) };
     }
 
-    // Obtener el SKU del cuerpo de la solicitud
-    const { sku, tenant_id } = JSON.parse(event.body);
-
-    // Parámetros para la búsqueda en DynamoDB
-    const params = {
-    TableName: 't_producto',
-    Key: {
-        tenant_id,
-        sku
+    // 2. Leer sku del body
+    const { sku } = JSON.parse(event.body || '{}');
+    if (!sku) {
+      return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo sku en el body' }) };
     }
-    };
 
-    // Ejecutar la consulta en DynamoDB
-    const data = await db.get(params);
+    // 3. Listar todas las tablas en tu cuenta
+    const { TableNames = [] } = await ddbRaw.send(new ListTablesCommand({}));
 
-
-    if (data.Item) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: 'Producto encontrado',
-          producto: data.Item
-        }),
-      };
-    } else {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({
-          message: 'Producto no encontrado',
-        }),
-      };
+    // 4. Escanear cada tabla que empiece por 't_producto'
+    for (const TableName of TableNames) {
+      if (!TableName.startsWith('t_producto')) continue;
+      const { Items = [] } = await db.scan({
+        TableName,
+        FilterExpression: 'sku = :s',
+        ExpressionAttributeValues: { ':s': sku }
+      });
+      if (Items.length > 0) {
+        // Devolver primer match (puedes devolver todos si prefieres)
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: 'Producto encontrado',
+            table: TableName,
+            producto: Items[0]
+          })
+        };
+      }
     }
+
+    // 5. Si no encuentra en ninguna tabla
+    return { statusCode: 404, body: JSON.stringify({ message: 'Producto no encontrado' }) };
+
   } catch (error) {
-    console.error('Error buscando producto:', error);
+    console.error('Error buscando producto global:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({
-        message: `Error interno: ${error.message}`,
-        stack: error.stack
+        message: `Error interno: ${error.message}`
       }),
     };
   }

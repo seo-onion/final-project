@@ -32,7 +32,7 @@ functions:
     events:
       - http:
           path: /product/find
-          method: get
+          method: post
           cors: true
           integration: lambda-proxy 
           request:
