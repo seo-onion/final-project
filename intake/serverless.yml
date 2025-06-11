@@ -1,0 +1,104 @@
+app: proyecto-final
+org: alexandermoralespanitz
+service: realtime-ingest
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: us-east-1  # Cambia esto a tu región preferida
+  stage: ${opt:stage, 'dev'}  # Permite diferentes stages (dev, prod, etc)
+  timeout: 29
+  iam:
+    role: arn:aws:iam::659277875740:role/LabRole
+  environment:
+    # Variables globales
+    COMPRAS_BUCKET: ${self:custom.buckets.compras}
+    # Variables de Elasticsearch por tenant
+    ES_HOST_PLAZA_VEA: ${self:custom.elasticsearch.plaza_vea}
+    ES_HOST_OTRO_TENANT: ${self:custom.elasticsearch.otro_tenant}
+
+plugins:
+  - serverless-python-requirements
+
+package:
+  individually: true
+  patterns:
+    - '!node_modules/**'
+    - '!venv/**'
+    - '!.git/**'
+    - '!.gitignore'
+    - '!README.md'
+    - '!package*.json'
+
+functions:
+  actualizarProductos:
+    handler: actualizar_productos/handler.lambda_handler
+    description: Actualiza productos en Elasticsearch por tenant
+    timeout: 30
+    memorySize: 256
+    environment:
+      # Puedes sobrescribir variables específicas aquí si es necesario
+    events:
+      - stream:
+          type: dynamodb
+          arn: ${self:custom.dynamodb.t_productos.streamArn}
+          batchSize: 5
+          startingPosition: LATEST
+    package:
+      patterns:
+        - 'actualizar_productos/**'
+        - 'shared/**'
+
+  actualizarCompras:
+    handler: actualizar_compras/handler.lambda_handler
+    description: Guarda compras en S3 como JSON
+    timeout: 30
+    memorySize: 256
+    environment:
+      # Puedes sobrescribir variables específicas aquí si es necesario
+    events:
+      - stream:
+          type: dynamodb
+          arn: ${self:custom.dynamodb.t_compras.streamArn}
+          batchSize: 5
+          startingPosition: LATEST
+    package:
+      patterns:
+        - 'actualizar_compras/**'
+        - 'shared/**'
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    usePoetry: false
+    layer: false
+    slim: true
+    zip: true
+
+  # Configuración de recursos
+  buckets:
+    compras: tu-bucket-compras-${self:provider.stage}  # Ejemplo: tu-bucket-compras-prod
+
+  elasticsearch:
+    plaza_vea: http://<IP_VM>:9200  # Reemplaza con la IP real de tu VM
+    otro_tenant: http://<IP_VM>:9201  # Reemplaza con la IP real de tu VM
+
+  dynamodb:
+    t_productos:
+      streamArn: arn:aws:dynamodb:us-east-1:659277875740:table/t_producto/stream/2025-06-11T06:26:50.341
+    t_compras:
+      streamArn: arn:aws:dynamodb:us-east-1:659277875740:table/t_compras/stream/2025-06-11T06:26:43.108
+
+resources:
+  Resources:
+    ComprasBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.buckets.compras}
+        VersioningConfiguration:
+          Status: Enabled
+        LifecycleConfiguration:
+          Rules:
+            - Id: DeleteOldFiles
+              Status: Enabled
+              ExpirationInDays: 365  # Ajusta según necesites

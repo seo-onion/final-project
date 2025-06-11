@@ -1,0 +1,16 @@
+{
+  "name": "intake",
+  "version": "1.0.0",
+  "description": "Este directorio contiene el código fuente de las Lambdas y utilidades para la ingesta en tiempo real desde DynamoDB Streams hacia Elasticsearch y S3.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^4.17.0",
+    "serverless-python-requirements": "^6.1.2"
+  }
+}
