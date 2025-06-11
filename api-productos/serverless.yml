@@ -1,0 +1,70 @@
+app: proyecto-final
+org: seonion
+
+
+service: api-productos
+
+provider:
+  name: aws
+  runtime: nodejs18.x  # Cambié a una versión compatible de Node.js
+  timeout: 29
+  iam:
+    role: arn:aws:iam::659277875740:role/LabRole
+
+functions:
+  create:
+    name: CreateProduct
+    handler: Lambda_CrearProductos.lambda_handler
+    events:
+      - http:
+          path: /product/create
+          method: post
+          cors: true
+          integration: lambda-proxy  
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+  findBySku:
+    name: FindProduct
+    handler: Lambda_FindProduct.lambda_handler
+    events:
+      - http:
+          path: /product/find
+          method: post
+          cors: true
+          integration: lambda-proxy 
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+resources:
+  Resources:
+    ProductosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: t_producto
+        AttributeDefinitions:
+          - AttributeName: tenant_id
+            AttributeType: S
+          - AttributeName: sort_id
+            AttributeType: S
+          - AttributeName: sku
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tenant_id
+            KeyType: HASH
+          - AttributeName: sort_id
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: SkuIndex
+            KeySchema:
+              - AttributeName: tenant_id
+                KeyType: HASH
+              - AttributeName: sku
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL

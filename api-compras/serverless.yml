@@ -1,0 +1,58 @@
+app: proyecto-final
+org: alexandermoralespanitz
+
+service: api-compras
+
+provider:
+  name: aws
+  runtime: python3.12
+  timeout: 29
+  iam:
+    role: arn:aws:iam::659277875740:role/LabRole
+
+functions:
+  create:
+    name: CreateCompra
+    handler: Lambda_CrearCompra.lambda_handler
+    events:
+      - http:
+          path: /compra/create
+          method: post
+          cors: true
+          integration: lambda-proxy
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+  list:
+    name: ListCompras
+    handler: Lambda_ListarCompras.lambda_handler
+    events:
+      - http:
+          path: /compra/list
+          method: post
+          cors: true
+          integration: lambda-proxy
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+resources:
+  Resources:
+    ComprasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: t_compras
+        AttributeDefinitions:
+          - AttributeName: tenant_id
+            AttributeType: S
+          - AttributeName: sort_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tenant_id
+            KeyType: HASH
+          - AttributeName: sort_id
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST 

@@ -1,0 +1,18 @@
+[project]
+name = "api-compras"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Alexander Morales-Panitz",email = "alexander@moralespanitz.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "boto3 (>=1.38.34,<2.0.0)",
+    "python-jose[cryptography] (>=3.5.0,<4.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

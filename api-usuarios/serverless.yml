@@ -1,0 +1,91 @@
+app: proyecto-final
+org: seonion
+
+
+service: api-usuarios
+
+provider:
+  name: aws
+  runtime: python3.12
+  timeout: 29
+  iam:
+    role: arn:aws:iam::659277875740:role/LabRole         
+
+
+functions:
+  register:
+    name: CreateUser
+    handler: Lambda_UserCreate.lambda_handler
+    events:
+      - http:
+          path: /user/register
+          method: post
+          cors: true
+          integration: lambda
+
+  login:
+    name: LoginUser
+    handler: Lambda_UserLogin.lambda_handler
+    events:
+      - http:
+          path: /user/login
+          method: post
+          cors: true
+          integration: lambda
+  
+  validateToken:
+    name: ValidateToken
+    handler: Lambda_ValidateAccessToken.lambda_handler
+
+
+resources:
+  Resources:
+    UsuariosTable:
+      Type: AWS::DynamoDB::Table
+      Properties: 
+        TableName: t_usuarios 
+        AttributeDefinitions:
+          - AttributeName: tenant_id
+            AttributeType: S
+          - AttributeName: sort_id
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tenant_id
+            KeyType: HASH
+          - AttributeName: sort_id
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: EmailIndex
+            KeySchema:
+              - AttributeName: tenant_id
+                KeyType: HASH
+              - AttributeName: email
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+    
+    AccesosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: t_access_token
+        AttributeDefinitions:
+          - AttributeName: token
+            AttributeType: S
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: expires_ts
+          Enabled: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+ 
