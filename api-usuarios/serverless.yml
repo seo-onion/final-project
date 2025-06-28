@@ -81,8 +81,6 @@ resources:
         AttributeDefinitions:
           - AttributeName: token
             AttributeType: S
-          - AttributeName: expires_ts
-            AttributeType: N
         KeySchema:
           - AttributeName: token
             KeyType: HASH
