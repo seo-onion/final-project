@@ -7,10 +7,13 @@ service: api-usuarios
 provider:
   name: aws
   runtime: python3.12
-  timeout: 29
+  stage: ${opt:stage}
+  timeout: 30
   iam:
     role: arn:aws:iam::659277875740:role/LabRole         
 
+custom:
+  tableName: t_usuario-${self:provider.stage}
 
 functions:
   register:
@@ -43,7 +46,7 @@ resources:
     UsuariosTable:
       Type: AWS::DynamoDB::Table
       Properties: 
-        TableName: t_usuarios 
+        TableName: ${self:custom.tableName}
         AttributeDefinitions:
           - AttributeName: tenant_id
             AttributeType: S

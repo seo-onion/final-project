@@ -6,9 +6,13 @@ service: api-compras
 provider:
   name: aws
   runtime: python3.12
-  timeout: 29
+  timeout: 30
+  stage: ${opt:stage}        
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
+
+custom:
+  tableName: t_compras-${self:provider.stage}
 
 functions:
   create:

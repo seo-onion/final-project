@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [api-productos, api-usuarios]
+        service: [api-productos, api-usuarios, api-compras]
 
     env:
       SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
@@ -28,7 +28,7 @@ jobs:
         with:   
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}  # Este paso solo es necesario si usas credenciales temporales
+          aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}   
           aws-region:            us-east-1
 
         # Eliminar los recursos existentes antes de desplegar
@@ -55,3 +55,12 @@ jobs:
       - name: Deploy ${{ matrix.service }}
         working-directory: ./${{ matrix.service }}
         run: sls deploy --stage ${{ github.ref_name }} --debug
+
+      # Instalar dependencias Python solo para api-compras
+      - name: Install Python plugin (api-compras)
+        if: ${{ matrix.service == 'api-compras' }}
+        working-directory: ./${{ matrix.service }}
+        run: |
+          npm init -y
+          npm install --save-dev serverless-python-requirements
+          pip install -r requirements.txt  # Asegúrate de instalar dependencias de Python

@@ -6,10 +6,14 @@ service: api-productos
 
 provider:
   name: aws
-  runtime: nodejs18.x  # Cambié a una versión compatible de Node.js
-  timeout: 29
+  runtime: nodejs18.x  
+  stage: ${opt:stage}
+  timeout: 30
   iam:
     role: arn:aws:iam::659277875740:role/LabRole
+
+custom:
+  tableName: t_productos-${self:provider.stage}
 
 functions:
   create:
@@ -45,7 +49,7 @@ resources:
     ProductosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: t_producto
+        TableName: ${self:custom.tableName}
         AttributeDefinitions:
           - AttributeName: tenant_id
             AttributeType: S
