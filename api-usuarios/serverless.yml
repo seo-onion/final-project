@@ -14,7 +14,9 @@ provider:
 
 custom:
   tableName: t_usuario-${self:provider.stage}
-
+  pythonRequirements:
+    dockerizePip: true
+ 
 functions:
   register:
     name: CreateUser
@@ -88,7 +90,3 @@ resources:
 plugins:
   - serverless-python-requirements
 
-custom:
-  pythonRequirements:
-    dockerizePip: true
- 
