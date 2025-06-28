@@ -33,22 +33,28 @@ module.exports.lambda_handler = async (event) => {
     if (!nombre) {
       return { statusCode: 400, body: 'El campo "nombre" es obligatorio' };
     }
+    if (precio == null) {
+      return { statusCode: 400, body: 'El campo "precio" es obligatorio' };
+    }
 
+    // SKU permanece como atributo independiente
     const sku = Date.now().toString(36);
-    const sort_id = `${sku}#${nombre}`;
+
+    // sort_id compuesto por nombre y precio
+    const sort_id = `${nombre}#${precio}`;
 
     const item = {
       tenant_id,
       sort_id,
-      sku,
+      sku,          
       nombre,
-      precio: precio ?? null,
+      precio,
       descripcion: descripcion ?? '',
       createdAt: new Date().toISOString()
     };
 
     await db.send(new PutCommand({
-      TableName: "t_producto",
+      TableName: "t_productos-dev",
       Item: item,
       ConditionExpression: 'attribute_not_exists(sort_id)'
     }));
@@ -57,7 +63,7 @@ module.exports.lambda_handler = async (event) => {
       statusCode: 201,
       body: JSON.stringify({
         message: 'Producto creado',
-        producto: { tenant_id, sku, nombre, sort_id }
+        producto: { tenant_id, sku, nombre, precio, sort_id }
       })
     };
 

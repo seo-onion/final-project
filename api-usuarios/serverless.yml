@@ -1,22 +1,25 @@
 app: proyecto-final
 org: seonion
 
-
 service: api-usuarios
 
 provider:
   name: aws
   runtime: python3.12
-  stage: ${opt:stage}
+  stage: ${opt:stage, 'dev'}
   timeout: 30
   iam:
-    role: arn:aws:iam::659277875740:role/LabRole         
+    role: arn:aws:iam::659277875740:role/LabRole
+  environment:
+    USERS_TABLE: ${self:custom.tableName}
+    ACCESOS_TABLE: ${self:custom.accessTableName}
 
 custom:
   tableName: t_usuario-${self:provider.stage}
+  accessTableName: t_access_token-${self:provider.stage}
   pythonRequirements:
     dockerizePip: true
- 
+
 functions:
   register:
     name: CreateUser
@@ -42,12 +45,11 @@ functions:
     name: ValidateToken
     handler: Lambda_ValidateAccessToken.lambda_handler
 
-
 resources:
   Resources:
     UsuariosTable:
       Type: AWS::DynamoDB::Table
-      Properties: 
+      Properties:
         TableName: ${self:custom.tableName}
         AttributeDefinitions:
           - AttributeName: tenant_id
@@ -71,14 +73,16 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-    
+
     AccesosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: t_access_token
+        TableName: ${self:custom.accessTableName}
         AttributeDefinitions:
           - AttributeName: token
             AttributeType: S
+          - AttributeName: expires_ts
+            AttributeType: N
         KeySchema:
           - AttributeName: token
             KeyType: HASH
@@ -89,4 +93,3 @@ resources:
 
 plugins:
   - serverless-python-requirements
-

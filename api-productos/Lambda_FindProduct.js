@@ -1,17 +1,18 @@
 'use strict';
 const {
-  LambdaClient, InvokeCommand
+  LambdaClient,
+  InvokeCommand
 } = require('@aws-sdk/client-lambda');
 const {
-  DynamoDBClient, ListTablesCommand, ScanCommand
+  DynamoDBClient
 } = require('@aws-sdk/client-dynamodb');
 const {
-  DynamoDBDocumentClient
+  DynamoDBDocumentClient,
+  QueryCommand
 } = require('@aws-sdk/lib-dynamodb');
 
 const lambda = new LambdaClient({});
-const ddbRaw = new DynamoDBClient({});
-const db = DynamoDBDocumentClient.from(ddbRaw);
+const db     = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 module.exports.lambda_handler = async (event) => {
   try {
@@ -25,46 +26,63 @@ module.exports.lambda_handler = async (event) => {
       FunctionName: 'ValidateToken',
       Payload: JSON.stringify({ token }),
     }));
-    const { statusCode } = JSON.parse(new TextDecoder().decode(respVal.Payload));
-    if (statusCode === 403) {
+    const { statusCode: statusValidate } = JSON.parse(new TextDecoder().decode(respVal.Payload));
+    if (statusValidate === 403) {
       return { statusCode: 403, body: JSON.stringify({ message: 'Forbidden – Token inválido o expirado' }) };
     }
 
-    // 2. Leer sku del body
-    const { sku } = JSON.parse(event.body || '{}');
+    // 2. Parseamos body JSON y validamos region + sku
+    let body = {};
+    if (event.body) {
+      body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+    }
+    const { region, sku } = body;
+    if (!region) {
+      return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo "region" en el body' }) };
+    }
     if (!sku) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo sku en el body' }) };
+      return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo "sku" en el body' }) };
     }
 
-    // 3. Listar todas las tablas en tu cuenta
-    const { TableNames = [] } = await ddbRaw.send(new ListTablesCommand({}));
+    // 3. Hacemos Query sobre el GSI SkuIndex
+    const tableName = process.env.TABLE_NAME; 
+    if (!tableName) {
+      throw new Error('Environment variable TABLE_NAME no está definida');
+    }
 
-    // 4. Escanear cada tabla que empiece por 't_producto'
-    for (const TableName of TableNames) {
-      if (!TableName.startsWith('t_producto')) continue;
-
-      const scanResult = await ddbRaw.send(new ScanCommand({
-        TableName,
-        FilterExpression: 'sku = :s',
-        ExpressionAttributeValues: { ':s': sku }
-      }));
-      const Items = scanResult.Items || [];
-
-      if (Items.length > 0) {
-        // Devolver primer match (puedes devolver todos si prefieres)
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            message: 'Producto encontrado',
-            table: TableName,
-            producto: Items[0]
-          })
-        };
+    const queryResult = await db.send(new QueryCommand({
+      TableName: tableName,
+      IndexName: 'SkuIndex',
+      KeyConditionExpression: '#tid = :t AND #sku = :s',
+      ExpressionAttributeNames: {
+        '#tid': 'tenant_id',
+        '#sku': 'sku'
+      },
+      ExpressionAttributeValues: {
+        ':t': region,
+        ':s': sku
       }
+    }));
+
+    const items = queryResult.Items || [];
+    if (items.length > 0) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: 'Producto encontrado',
+          producto: items[0]
+        })
+      };
     }
 
-    // 5. Si no encuentra en ninguna tabla
-    return { statusCode: 404, body: JSON.stringify({ message: 'Producto no encontrado', producto: null }) };
+    // 4. Si no encuentra ningún item
+    return {
+      statusCode: 404,
+      body: JSON.stringify({
+        message: 'Producto no encontrado',
+        producto: null
+      })
+    };
 
   } catch (error) {
     console.error('Error buscando producto global:', error);
@@ -72,7 +90,7 @@ module.exports.lambda_handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({
         message: `Error interno: ${error.message}`
-      }),
+      })
     };
   }
 };
