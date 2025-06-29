@@ -44,6 +44,20 @@ functions:
               headers:
                 Authorization: true
 
+  listProducts:
+    name: listProduct
+    handler: Lambda_ListProduct.lambda_handler
+    events:
+      - http:
+          path: /product/list
+          method: post
+          cors: true
+          integration: lambda-proxy 
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
 resources:
   Resources:
     ProductosTable:
