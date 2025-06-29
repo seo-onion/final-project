@@ -36,8 +36,8 @@ module.exports.lambda_handler = async (event) => {
     if (event.body) {
       body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
     }
-    const { region, sku } = body;
-    if (!region) {
+    const { tenant_id, sku } = body;
+    if (!tenant_id) {
       return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo "region" en el body' }) };
     }
     if (!sku) {
@@ -54,7 +54,7 @@ module.exports.lambda_handler = async (event) => {
         '#sku': 'sku'
       },
       ExpressionAttributeValues: {
-        ':t': region,
+        ':t': tenant_id,
         ':s': sku
       }
     }));

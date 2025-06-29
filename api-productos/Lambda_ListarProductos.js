@@ -40,14 +40,14 @@ module.exports.listProducts = async (event) => {
     }
     const qs = event.queryStringParameters || {};
 
-    const region   = body.region || qs.region;
+    const tenant_id   = body.tenant_id || qs.tenant_id;
     const pageSize = parseInt(body.pageSize || qs.pageSize || '20', 10);
     const lastKey  = body.lastKey || qs.lastKey ? JSON.parse(body.lastKey) : undefined;
 
-    if (!region) {
+    if (!tenant_id) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: 'Falta el campo "region"' })
+        body: JSON.stringify({ message: 'Falta el campo "tenant_id"' })
       };
     }
 
@@ -56,7 +56,7 @@ module.exports.listProducts = async (event) => {
       IndexName: undefined, // omitimos GSI, usamos tabla primaria
       KeyConditionExpression: '#tid = :t',
       ExpressionAttributeNames:  { '#tid': 'tenant_id' },
-      ExpressionAttributeValues: { ':t': region },
+      ExpressionAttributeValues: { ':t': tenant_id },
       Limit: pageSize,
       ScanIndexForward: false    // false = orden descendente (opcional)
     };
