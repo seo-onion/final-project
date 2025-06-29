@@ -7,7 +7,7 @@ const { DynamoDBDocumentClient, QueryCommand } = require('@aws-sdk/lib-dynamodb'
 const lambda = new LambdaClient({});
 const db     = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
-module.exports.listProducts = async (event) => {
+module.exports.lambda_handler = async (event) => {
   try {
     const headers = event.headers || {};
     const auth    = headers.Authorization || headers.authorization;
