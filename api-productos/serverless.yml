@@ -45,7 +45,7 @@ functions:
                 Authorization: true
 
   listProducts:
-    name: listProduct
+    name: listProducts
     handler: Lambda_ListProduct.lambda_handler
     events:
       - http:
