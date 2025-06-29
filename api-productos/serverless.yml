@@ -58,6 +58,20 @@ functions:
               headers:
                 Authorization: true
 
+  PatchProduct:
+    name: patchProducts
+    handler: Lambda_ModificarProducto.lambda_handler
+    events:
+      - http:
+          path: /product/patch
+          method: patch
+          cors: true
+          integration: lambda-proxy 
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
 resources:
   Resources:
     ProductosTable:
