@@ -64,7 +64,7 @@ module.exports.lambda_handler = async (event) => {
 
     // 4. Eliminar el ítem usando su clave compuesta
     await db.send(new DeleteCommand({
-      TableName: tableName,
+      TableName: "t_productos-dev",
       Key: { tenant_id, sort_id },
       ConditionExpression: 'attribute_exists(sort_id)'
     }));
