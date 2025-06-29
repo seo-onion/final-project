@@ -72,6 +72,20 @@ functions:
               headers:
                 Authorization: true
 
+  DeleteProduct:
+    name: deleteProducts
+    handler: Lambda_EliminarProducto.lambda_handler
+    events:
+      - http:
+          path: /product/delete
+          method: delete
+          cors: true
+          integration: lambda-proxy 
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
 resources:
   Resources:
     ProductosTable:
