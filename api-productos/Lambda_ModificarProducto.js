@@ -79,7 +79,7 @@ module.exports.lambda_handler = async (event) => {
     setClauses.push('#updatedAt = :now');
 
     const updateParams = {
-      TableName: tableName,
+      TableName: "t_productos-dev",
       Key: { tenant_id, sort_id },
       UpdateExpression: 'SET ' + setClauses.join(', '),
       ExpressionAttributeNames,
