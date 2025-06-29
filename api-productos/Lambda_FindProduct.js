@@ -44,14 +44,9 @@ module.exports.lambda_handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo "sku" en el body' }) };
     }
 
-    // 3. Hacemos Query sobre el GSI SkuIndex
-    const tableName = process.env.TABLE_NAME; 
-    if (!tableName) {
-      throw new Error('Environment variable TABLE_NAME no está definida');
-    }
 
     const queryResult = await db.send(new QueryCommand({
-      TableName: tableName,
+      TableName: "t_productos-dev",
       IndexName: 'SkuIndex',
       KeyConditionExpression: '#tid = :t AND #sku = :s',
       ExpressionAttributeNames: {
