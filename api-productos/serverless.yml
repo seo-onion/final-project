@@ -46,7 +46,7 @@ functions:
 
   listProducts:
     name: listProducts
-    handler: Lambda_ListProduct.lambda_handler
+    handler: Lambda_ListarProductos.lambda_handler
     events:
       - http:
           path: /product/list
