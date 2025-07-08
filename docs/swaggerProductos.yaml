@@ -10,6 +10,9 @@ schemes:
 paths:
   /product/create:
     post:
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
       parameters:
         - name: "Authorization"
           in: "header"
@@ -34,10 +37,15 @@ paths:
                 type: string
                 example: "Este es un producto de prueba"
       responses:
-        200:
+        "200":
           description: "Producto creado exitosamente"
+        "400":
+          description: "Solicitud invalida"
   /product/find:
     post:
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
       parameters:
         - name: "Authorization"
           in: "header"
@@ -56,10 +64,15 @@ paths:
                 type: string
                 example: "mch00jkc"
       responses:
-        200:
+        "200":
           description: "Producto creado exitosamente"
+        "400":
+          description: "Solicitud invalida"
   /product/list:
     post:
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
       parameters:
         - name: "Authorization"
           in: "header"
@@ -78,9 +91,14 @@ paths:
                 type: number
                 example: 20
       responses:
-        200:
+        "200":
           description: "Producto encontrado"
+        "400":
+          description: "Solicitud invalida"
   /product/delete:
+    consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
     delete:
       parameters:
         - name: "Authorization"
@@ -100,9 +118,14 @@ paths:
                 type: string
                 example: "mch00jkc"
       responses:
-        204:
+        "204":
           description: "Producto eliminado exitosamente"
+        "400":
+          description: "Solicitud invalida"
   /product/patch:
+    consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
     patch:
       parameters:
         - name: "Authorization"
@@ -134,5 +157,7 @@ paths:
                 type: number
                 example: 42
       responses:
-        200:
+        "200":
           description: "Producto eliminado exitosamente"
+        "400":
+          description: "Solicitud invalida"
