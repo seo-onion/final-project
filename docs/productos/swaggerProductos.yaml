@@ -37,7 +37,7 @@ paths:
                 type: string
                 example: "Este es un producto de prueba"
       responses:
-        "200":
+        "201":
           description: "Producto creado exitosamente"
         "400":
           description: "Solicitud invalida"
