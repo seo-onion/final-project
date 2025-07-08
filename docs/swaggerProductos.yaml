@@ -1,0 +1,138 @@
+---
+swagger: "2.0"
+info:
+  version: "2025-06-29T03:10:16Z"
+  title: "dev-api-productos"
+host: "m34zhwbth7.execute-api.us-east-1.amazonaws.com"
+basePath: "/dev"
+schemes:
+- "https"
+paths:
+  /product/create:
+    post:
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              tenant_id:
+                type: string
+                example: "Comida"
+              nombre:
+                type: string
+                example: "pan"
+              precio:
+                type: number
+                example: 123.45
+              descripcion:
+                type: string
+                example: "Este es un producto de prueba"
+      responses:
+        200:
+          description: "Producto creado exitosamente"
+  /product/find:
+    post:
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              tenant_id:
+                type: string
+                example: "Limpieza2"
+              sku:
+                type: string
+                example: "mch00jkc"
+      responses:
+        200:
+          description: "Producto creado exitosamente"
+  /product/list:
+    post:
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              tenant_id:
+                type: string
+                example: "Limpieza2"
+              pageSize:
+                type: number
+                example: 20
+      responses:
+        200:
+          description: "Producto encontrado"
+  /product/delete:
+    delete:
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              tenant_id:
+                type: string
+                example: "Limpieza2"
+              sku:
+                type: string
+                example: "mch00jkc"
+      responses:
+        204:
+          description: "Producto eliminado exitosamente"
+  /product/patch:
+    patch:
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              tenant_id:
+                type: string
+                example: "Comida"
+              nombre:
+                type: string
+                example: "Nuevo Nombre de Producto"
+              precio:
+                type: number
+                example: 159.99
+              descripcion:
+                type: string
+                example: "Descripción actualizada del producto"
+              categoria:
+                type: string
+                example: "Limpieza"
+              stock:
+                type: number
+                example: 42
+      responses:
+        200:
+          description: "Producto eliminado exitosamente"
