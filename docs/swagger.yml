@@ -1,24 +1,41 @@
 openapi: 3.0.1
 info:
-  title: API Multi-tenant de Usuarios, Productos y Compras
+  title: API Multi‑tenant de Usuarios, Productos y Compras
   description: Documentación Swagger para los microservicios del proyecto final.
   version: 1.0.0
 
 servers:
-  - url: https://5efu0bvbt2.execute-api.us-east-1.amazonaws.com/dev
-    description: Entorno de desarrollo
+  - url: https://m34zhwbth7.execute-api.us-east-1.amazonaws.com/dev/
+    description: Entorno de desarrollo AWS
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Usuario:
       type: object
+      required:
+        - email
+        - password
       properties:
         email:
           type: string
+          format: email
         password:
           type: string
+          format: password
+
     Producto:
       type: object
+      required:
+        - product_id
+        - name
+        - price
+        - stock
       properties:
         product_id:
           type: string
@@ -26,12 +43,35 @@ components:
           type: string
         price:
           type: number
+          format: float
         description:
           type: string
         stock:
           type: integer
+          minimum: 0
+
+    ItemCompra:
+      type: object
+      required:
+        - product_id
+        - quantity
+        - price
+      properties:
+        product_id:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        price:
+          type: number
+          format: float
+
     Compra:
       type: object
+      required:
+        - compra_id
+        - user_id
+        - items
       properties:
         compra_id:
           type: string
@@ -40,21 +80,17 @@ components:
         items:
           type: array
           items:
-            type: object
-            properties:
-              product_id:
-                type: string
-              quantity:
-                type: integer
-              price:
-                type: number
+            $ref: '#/components/schemas/ItemCompra'
 
+security:
+  - bearerAuth: []
 
 paths:
 
-  /users/signup:
+  /users/register:
     post:
-      tags: [Usuarios]
+      tags:
+        - Usuarios
       summary: Registro de nuevo usuario
       requestBody:
         required: true
@@ -70,7 +106,8 @@ paths:
 
   /users/login:
     post:
-      tags: [Usuarios]
+      tags:
+        - Usuarios
       summary: Login de usuario y retorno de token
       requestBody:
         required: true
@@ -84,103 +121,38 @@ paths:
         '401':
           description: Credenciales inválidas
 
-  /products:
-    get:
-      tags: [Productos]
-      summary: Listar productos
-      parameters:
-        - name: limit
-          in: query
-          schema:
-            type: integer
-        - name: lastKey
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Lista de productos
-    post:
-      tags: [Productos]
-      summary: Crear un nuevo producto
-      requestBody:
+  /products/find:
+    parameters:
+      - name: tenant_id
+        in: path
         required: true
-        content:
-          application/json:
+        schema:
+          type: string
+        requestBody:
+          required: true
+          content:
+            application/json:
             schema:
               $ref: '#/components/schemas/Producto'
-      responses:
-        '201':
-          description: Producto creado
-
-  /products/{product_id}:
-    get:
-      tags: [Productos]
+    post:
+      tags:
+        - Productos
       summary: Obtener producto por ID
-      parameters:
-        - name: product_id
-          in: path
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Producto encontrado
-    put:
-      tags: [Productos]
-      summary: Modificar producto existente
-      parameters:
-        - name: product_id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Producto'
-      responses:
-        '200':
-          description: Producto actualizado
+        '404':
+          description: No encontrado
     delete:
-      tags: [Productos]
+      tags:
+        - Productos
       summary: Eliminar producto
-      parameters:
-        - name: product_id
-          in: path
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       responses:
         '204':
           description: Producto eliminado
-
-  /purchases:
-    post:
-      tags: [Compras]
-      summary: Registrar una compra
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Compra'
-      responses:
-        '201':
-          description: Compra registrada
-
-  /purchases/{user_id}:
-    get:
-      tags: [Compras]
-      summary: Obtener compras por usuario
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Lista de compras
+        '404':
+          description: No encontrado
