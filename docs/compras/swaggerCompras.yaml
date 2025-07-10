@@ -1,0 +1,26 @@
+---
+swagger: "2.0"
+info:
+  version: "2025-06-28T23:03:11Z"
+  title: "dev-api-compras"
+host: "5efu0bvbt2.execute-api.us-east-1.amazonaws.com"
+basePath: "/dev"
+schemes:
+- "https"
+paths:
+  /compra/create:
+    post:
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      responses: {}
+  /compra/list:
+    post:
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      responses: {}
