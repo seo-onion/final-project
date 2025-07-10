@@ -77,11 +77,11 @@ custom:
 
   # Configuración de recursos
   buckets:
-    compras: tu-bucket-compras-${self:provider.stage}  # Ejemplo: tu-bucket-compras-prod
+    compras: proyecto-final-compras-${self:provider.stage}
 
   elasticsearch:
-    plaza_vea: http://18.212.49.118:9200
-    otro_tenant: http://18.212.49.118:9201
+    plaza_vea: http://54.197.160.231:9200
+    otro_tenant: http://54.197.160.231:9201
 
   dynamodb:
     t_productos:
