@@ -1,0 +1,116 @@
+app: proyecto-final
+org: seonion
+
+
+service: api-productos
+
+provider:
+  name: aws
+  runtime: nodejs18.x  
+  stage: ${opt:stage, 'dev'}
+  timeout: 30
+  iam:
+    role: arn:aws:iam::659277875740:role/LabRole
+
+custom:
+  tableName: t_productos-${self:provider.stage}
+
+functions:
+  create:
+    name: CreateProduct
+    handler: Lambda_CrearProductos.lambda_handler
+    events:
+      - http:
+          path: /product/create
+          method: post
+          cors: true
+          integration: lambda-proxy  
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+  findBySku:
+    name: FindProduct
+    handler: Lambda_FindProduct.lambda_handler
+    events:
+      - http:
+          path: /product/find
+          method: post
+          cors: true
+          integration: lambda-proxy 
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+  listProducts:
+    name: listProducts
+    handler: Lambda_ListarProductos.lambda_handler
+    events:
+      - http:
+          path: /product/list
+          method: post
+          cors: true
+          integration: lambda-proxy 
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+  PatchProduct:
+    name: patchProducts
+    handler: Lambda_ModificarProducto.lambda_handler
+    events:
+      - http:
+          path: /product/patch
+          method: patch
+          cors: true
+          integration: lambda-proxy 
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+  DeleteProduct:
+    name: deleteProducts
+    handler: Lambda_EliminarProducto.lambda_handler
+    events:
+      - http:
+          path: /product/delete
+          method: delete
+          cors: true
+          integration: lambda-proxy 
+          request:
+            parameters:
+              headers:
+                Authorization: true
+
+resources:
+  Resources:
+    ProductosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: tenant_id
+            AttributeType: S
+          - AttributeName: sort_id
+            AttributeType: S
+          - AttributeName: sku
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tenant_id
+            KeyType: HASH
+          - AttributeName: sort_id
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: SkuIndex
+            KeySchema:
+              - AttributeName: tenant_id
+                KeyType: HASH
+              - AttributeName: sku
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL

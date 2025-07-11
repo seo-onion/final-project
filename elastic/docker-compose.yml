@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  es-plaza-vea:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
+    container_name: es-plaza-vea
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - /opt/es_data/plaza_vea:/usr/share/elasticsearch/data
+    restart: unless-stopped
+
+  es-otro-tenant:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
+    container_name: es-otro-tenant
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9201:9200"
+    volumes:
+      - /opt/es_data/otro_tenant:/usr/share/elasticsearch/data
+    restart: unless-stopped

@@ -1,0 +1,93 @@
+app: proyecto-final
+org: seonion
+
+service: api-usuarios
+
+provider:
+  name: aws
+  runtime: python3.12
+  stage: ${opt:stage, 'dev'}
+  timeout: 30
+  iam:
+    role: arn:aws:iam::659277875740:role/LabRole
+  environment:
+    USERS_TABLE: ${self:custom.tableName}
+    ACCESOS_TABLE: ${self:custom.accessTableName}
+
+custom:
+  tableName: t_usuario-${self:provider.stage}
+  accessTableName: t_access_token-${self:provider.stage}
+  pythonRequirements:
+    dockerizePip: true
+
+functions:
+  register:
+    name: CreateUser
+    handler: Lambda_UserCreate.lambda_handler
+    events:
+      - http:
+          path: /user/register
+          method: post
+          cors: true
+          integration: lambda
+
+  login:
+    name: LoginUser
+    handler: Lambda_UserLogin.lambda_handler
+    events:
+      - http:
+          path: /user/login
+          method: post
+          cors: true
+          integration: lambda
+  
+  validateToken:
+    name: ValidateToken
+    handler: Lambda_ValidateAccessToken.lambda_handler
+
+resources:
+  Resources:
+    UsuariosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: tenant_id
+            AttributeType: S
+          - AttributeName: sort_id
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tenant_id
+            KeyType: HASH
+          - AttributeName: sort_id
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: EmailIndex
+            KeySchema:
+              - AttributeName: tenant_id
+                KeyType: HASH
+              - AttributeName: email
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    AccesosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.accessTableName}
+        AttributeDefinitions:
+          - AttributeName: token
+            AttributeType: S
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: expires_ts
+          Enabled: true
+
+plugins:
+  - serverless-python-requirements

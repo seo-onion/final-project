@@ -1,0 +1,209 @@
+{
+  "/Users/moralespanitz/me/lab/final-cloud-project/api-productos/serverless.yml": {
+    "versionFramework": "4.17.1",
+    "servicePath": "/Users/moralespanitz/me/lab/final-cloud-project/api-productos/serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "app": "proyecto-final",
+      "org": "seonion",
+      "service": "api-productos",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs18.x",
+        "stage": "${opt:stage, 'dev'}",
+        "timeout": 30,
+        "iam": {
+          "role": "arn:aws:iam::659277875740:role/LabRole"
+        }
+      },
+      "custom": {
+        "tableName": "t_productos-${self:provider.stage}"
+      },
+      "functions": {
+        "create": {
+          "name": "CreateProduct",
+          "handler": "Lambda_CrearProductos.lambda_handler",
+          "events": [
+            {
+              "http": {
+                "path": "/product/create",
+                "method": "post",
+                "cors": true,
+                "integration": "lambda-proxy",
+                "request": {
+                  "parameters": {
+                    "headers": {
+                      "Authorization": true
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "findBySku": {
+          "name": "FindProduct",
+          "handler": "Lambda_FindProduct.lambda_handler",
+          "events": [
+            {
+              "http": {
+                "path": "/product/find",
+                "method": "post",
+                "cors": true,
+                "integration": "lambda-proxy",
+                "request": {
+                  "parameters": {
+                    "headers": {
+                      "Authorization": true
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "listProducts": {
+          "name": "listProducts",
+          "handler": "Lambda_ListarProductos.lambda_handler",
+          "events": [
+            {
+              "http": {
+                "path": "/product/list",
+                "method": "post",
+                "cors": true,
+                "integration": "lambda-proxy",
+                "request": {
+                  "parameters": {
+                    "headers": {
+                      "Authorization": true
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "PatchProduct": {
+          "name": "patchProducts",
+          "handler": "Lambda_ModificarProducto.lambda_handler",
+          "events": [
+            {
+              "http": {
+                "path": "/product/patch",
+                "method": "patch",
+                "cors": true,
+                "integration": "lambda-proxy",
+                "request": {
+                  "parameters": {
+                    "headers": {
+                      "Authorization": true
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "DeleteProduct": {
+          "name": "deleteProducts",
+          "handler": "Lambda_EliminarProducto.lambda_handler",
+          "events": [
+            {
+              "http": {
+                "path": "/product/delete",
+                "method": "delete",
+                "cors": true,
+                "integration": "lambda-proxy",
+                "request": {
+                  "parameters": {
+                    "headers": {
+                      "Authorization": true
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "resources": {
+        "Resources": {
+          "ProductosTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "${self:custom.tableName}",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "tenant_id",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "sort_id",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "sku",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "tenant_id",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "sort_id",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST",
+              "GlobalSecondaryIndexes": [
+                {
+                  "IndexName": "SkuIndex",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "tenant_id",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "sku",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "ProjectionType": "ALL"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs18.x",
+      "stage": "${opt:stage, 'dev'}",
+      "timeout": 30,
+      "iam": {
+        "role": "arn:aws:iam::659277875740:role/LabRole"
+      }
+    },
+    "error": {
+      "message": "You are not a member of the Org \"seonion\". Verify the \"org\" in your Service configuration (e.g. serverless.yml) or that you're providing manually is one your User Account or License Key has access to. Lastly, check the .serverlessrc file in the home directory of your machine to better understand what user account or License Key you are currently using. You can run \"serverless login\" to change the user account or License Key you are using.",
+      "stack": "Error: You are not a member of the Org \"seonion\". Verify the \"org\" in your Service configuration (e.g. serverless.yml) or that you're providing manually is one your User Account or License Key has access to. Lastly, check the .serverlessrc file in the home directory of your machine to better understand what user account or License Key you are currently using. You can run \"serverless login\" to change the user account or License Key you are using.\n    at Authentication.getAuthenticatedData (file:///Users/moralespanitz/.serverless/releases/4.17.1/package/dist/sf-core.js:830:3154)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Authentication.authenticate (file:///Users/moralespanitz/.serverless/releases/4.17.1/package/dist/sf-core.js:830:22245)\n    at async TraditionalRunner.resolveVariablesAndAuthenticate (file:///Users/moralespanitz/.serverless/releases/4.17.1/package/dist/sf-core.js:834:2379)\n    at async TraditionalRunner.run (file:///Users/moralespanitz/.serverless/releases/4.17.1/package/dist/sf-core.js:1407:27919)\n    at async route (file:///Users/moralespanitz/.serverless/releases/4.17.1/package/dist/sf-core.js:1582:2878)\n    at async Object.run (file:///Users/moralespanitz/.serverless/releases/4.17.1/package/dist/sf-core.js:1583:3661)\n    at async run2 (file:///Users/moralespanitz/.serverless/releases/4.17.1/package/dist/sf-core.js:1583:4815)"
+    },
+    "serviceRawFile": "app: proyecto-final\norg: seonion\n\n\nservice: api-productos\n\nprovider:\n  name: aws\n  runtime: nodejs18.x  \n  stage: ${opt:stage, 'dev'}\n  timeout: 30\n  iam:\n    role: arn:aws:iam::659277875740:role/LabRole\n\ncustom:\n  tableName: t_productos-${self:provider.stage}\n\nfunctions:\n  create:\n    name: CreateProduct\n    handler: Lambda_CrearProductos.lambda_handler\n    events:\n      - http:\n          path: /product/create\n          method: post\n          cors: true\n          integration: lambda-proxy  \n          request:\n            parameters:\n              headers:\n                Authorization: true\n\n  findBySku:\n    name: FindProduct\n    handler: Lambda_FindProduct.lambda_handler\n    events:\n      - http:\n          path: /product/find\n          method: post\n          cors: true\n          integration: lambda-proxy \n          request:\n            parameters:\n              headers:\n                Authorization: true\n\n  listProducts:\n    name: listProducts\n    handler: Lambda_ListarProductos.lambda_handler\n    events:\n      - http:\n          path: /product/list\n          method: post\n          cors: true\n          integration: lambda-proxy \n          request:\n            parameters:\n              headers:\n                Authorization: true\n\n  PatchProduct:\n    name: patchProducts\n    handler: Lambda_ModificarProducto.lambda_handler\n    events:\n      - http:\n          path: /product/patch\n          method: patch\n          cors: true\n          integration: lambda-proxy \n          request:\n            parameters:\n              headers:\n                Authorization: true\n\n  DeleteProduct:\n    name: deleteProducts\n    handler: Lambda_EliminarProducto.lambda_handler\n    events:\n      - http:\n          path: /product/delete\n          method: delete\n          cors: true\n          integration: lambda-proxy \n          request:\n            parameters:\n              headers:\n                Authorization: true\n\nresources:\n  Resources:\n    ProductosTable:\n      Type: AWS::DynamoDB::Table\n      Properties:\n        TableName: ${self:custom.tableName}\n        AttributeDefinitions:\n          - AttributeName: tenant_id\n            AttributeType: S\n          - AttributeName: sort_id\n            AttributeType: S\n          - AttributeName: sku\n            AttributeType: S\n        KeySchema:\n          - AttributeName: tenant_id\n            KeyType: HASH\n          - AttributeName: sort_id\n            KeyType: RANGE\n        BillingMode: PAY_PER_REQUEST\n        GlobalSecondaryIndexes:\n          - IndexName: SkuIndex\n            KeySchema:\n              - AttributeName: tenant_id\n                KeyType: HASH\n              - AttributeName: sku\n                KeyType: RANGE\n            Projection:\n              ProjectionType: ALL\n",
+    "command": [
+      "info"
+    ],
+    "options": {
+      "stage": "dev"
+    },
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}
