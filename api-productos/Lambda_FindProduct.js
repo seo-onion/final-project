@@ -46,7 +46,7 @@ module.exports.lambda_handler = async (event) => {
 
 
     const queryResult = await db.send(new QueryCommand({
-      TableName: "t_productos-dev",
+      TableName: "t_productos-test",
       IndexName: 'SkuIndex',
       KeyConditionExpression: '#tid = :t AND #sku = :s',
       ExpressionAttributeNames: {

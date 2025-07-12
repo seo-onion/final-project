@@ -48,7 +48,7 @@ resources:
     ComprasTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: t_compras
+        TableName: ${self:custom.tableName}
         AttributeDefinitions:
           - AttributeName: tenant_id
             AttributeType: S

@@ -29,7 +29,7 @@ def lambda_handler(event, context):
             }
 
         dynamodb    = boto3.resource('dynamodb')
-        t_usuarios  = dynamodb.Table('t_usuario-dev')
+        t_usuarios  = dynamodb.Table('t_usuario-test')
 
         # Comprobamos si ya existe el email
         resp = t_usuarios.query(

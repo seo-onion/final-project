@@ -3,10 +3,7 @@ import boto3
 import json
 from boto3.dynamodb.conditions import Key
 
-# Obtener el nombre de la tabla desde variable de entorno
-COMPRAS_TABLE = os.environ.get('COMPRAS_TABLE')
-if not COMPRAS_TABLE:
-    raise RuntimeError("Environment variable COMPRAS_TABLE no definida")
+COMPRAS_TABLE = 't_compras-test'
 
 lambda_client = boto3.client('lambda')
 dynamodb     = boto3.resource('dynamodb')

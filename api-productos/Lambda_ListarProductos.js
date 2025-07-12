@@ -52,7 +52,7 @@ module.exports.lambda_handler = async (event) => {
     }
 
     const params = {
-      TableName: "t_productos-dev",
+      TableName: "t_productos-test",
       IndexName: undefined, // omitimos GSI, usamos tabla primaria
       KeyConditionExpression: '#tid = :t',
       ExpressionAttributeNames:  { '#tid': 'tenant_id' },

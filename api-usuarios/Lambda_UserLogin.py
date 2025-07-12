@@ -28,7 +28,7 @@ def lambda_handler(event, context):
             }
 
         dynamodb = boto3.resource('dynamodb')
-        users_tbl = dynamodb.Table('t_usuario-dev')
+        users_tbl = dynamodb.Table('t_usuario-test')
 
         # 3) Consultar por email en GSI EmailIndex
         resp = users_tbl.query(
@@ -61,7 +61,7 @@ def lambda_handler(event, context):
         exp_ts  = int(exp_dt.timestamp())
 
         # 6) Guardar token en tabla de tokens
-        tokens_tbl = dynamodb.Table('t_access_token-dev')
+        tokens_tbl = dynamodb.Table('t_access_token-test')
         tokens_tbl.put_item(Item={
             'tenant_id':  tenant_id,
             'sort_id':    user['sort_id'],  # identifica al usuario

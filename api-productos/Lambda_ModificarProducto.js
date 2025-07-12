@@ -42,7 +42,7 @@ module.exports.lambda_handler = async (event) => {
     }
 
     const query = await db.send(new QueryCommand({
-      TableName: "t_productos-dev",
+      TableName: "t_productos-test",
       IndexName: 'SkuIndex',
       KeyConditionExpression: '#tid = :t AND #sku = :s',
       ExpressionAttributeNames: { '#tid': 'tenant_id', '#sku': 'sku' },
@@ -79,7 +79,7 @@ module.exports.lambda_handler = async (event) => {
     setClauses.push('#updatedAt = :now');
 
     const updateParams = {
-      TableName: "t_productos-dev",
+      TableName: "t_productos-test",
       Key: { tenant_id, sort_id },
       UpdateExpression: 'SET ' + setClauses.join(', '),
       ExpressionAttributeNames,
