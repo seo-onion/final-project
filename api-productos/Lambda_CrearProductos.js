@@ -14,7 +14,7 @@ module.exports.lambda_handler = async (event) => {
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
     const validateResp = await lambda.send(new InvokeCommand({
-      FunctionName: 'ValidateToken',
+      FunctionName: 'ValidateToken-dev',
       Payload: JSON.stringify({ token }),
     }));
 

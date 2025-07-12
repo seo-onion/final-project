@@ -22,7 +22,7 @@ custom:
 
 functions:
   register:
-    name: CreateUser
+    name: CreateUser-${self:provider.stage}
     handler: Lambda_UserCreate.lambda_handler
     events:
       - http:
@@ -32,7 +32,7 @@ functions:
           integration: lambda
 
   login:
-    name: LoginUser
+    name: LoginUser-${self:provider.stage}
     handler: Lambda_UserLogin.lambda_handler
     events:
       - http:
@@ -42,7 +42,7 @@ functions:
           integration: lambda
   
   validateToken:
-    name: ValidateToken
+    name: ValidateToken-${self:provider.stage}
     handler: Lambda_ValidateAccessToken.lambda_handler
 
 resources:
