@@ -6,7 +6,7 @@ service: api-usuarios
 provider:
   name: aws
   runtime: python3.12
-  stage: ${opt:stage, 'dev'}
+  stage: ${opt:stage}
   timeout: 30
   iam:
     role: arn:aws:iam::659277875740:role/LabRole

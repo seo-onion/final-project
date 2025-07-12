@@ -2,7 +2,7 @@ name: CI/CD – Serverless
 
 on:
   push:
-    branches: [ dev, master, test ]
+    branches: [ dev, prod, test ]
 
 jobs:
   deploy:

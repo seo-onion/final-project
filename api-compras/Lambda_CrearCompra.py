@@ -3,7 +3,7 @@ import boto3
 import json
 from boto3.dynamodb.conditions import Key
 
-COMPRAS_TABLE = 't_compras-test'
+COMPRAS_TABLE = 't_compras-prod'
 
 lambda_client = boto3.client('lambda')
 dynamodb     = boto3.resource('dynamodb')
