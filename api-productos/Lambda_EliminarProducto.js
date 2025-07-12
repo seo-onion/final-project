@@ -21,7 +21,7 @@ module.exports.lambda_handler = async (event) => {
     }
     const token = auth.replace(/^Bearer\s+/i, '');
     const valResp = await lambda.send(new InvokeCommand({
-      FunctionName: 'ValidateToken-test',
+      FunctionName: 'ValidateToken-prod',
       Payload: JSON.stringify({ token })
     }));
     const { statusCode: codeVal } = JSON.parse(new TextDecoder().decode(valResp.Payload));
@@ -49,7 +49,7 @@ module.exports.lambda_handler = async (event) => {
 
 
     const query = await db.send(new QueryCommand({
-      TableName: "t_productos-test",
+      TableName: "t_productos-prod",
       IndexName:  'SkuIndex',
       KeyConditionExpression: '#tid = :t AND #sku = :s',
       ExpressionAttributeNames:  { '#tid': 'tenant_id', '#sku': 'sku' },
@@ -64,7 +64,7 @@ module.exports.lambda_handler = async (event) => {
 
     // 4. Eliminar el ítem usando su clave compuesta
     await db.send(new DeleteCommand({
-      TableName: "t_productos-test",
+      TableName: "t_productos-prod",
       Key: { tenant_id, sort_id },
       ConditionExpression: 'attribute_exists(sort_id)'
     }));

@@ -18,7 +18,7 @@ def lambda_handler(event, context):
         token = auth_header.replace('Bearer ', '')
 
         resp = lambda_client.invoke(
-            FunctionName='ValidateToken-test',
+            FunctionName='ValidateToken-prod',
             Payload=json.dumps({'token': token})
         )
         payload = json.loads(resp['Payload'].read())

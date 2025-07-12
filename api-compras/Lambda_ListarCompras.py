@@ -4,7 +4,7 @@ from boto3.dynamodb.conditions import Key
 
 lambda_client = boto3.client('lambda')
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('t_compras-test')
+table = dynamodb.Table('t_compras-prod')
 
 def lambda_handler(event, context):
     try:
@@ -14,7 +14,7 @@ def lambda_handler(event, context):
             return {'statusCode': 401, 'body': 'Missing Authorization header'}
         token = auth_header.replace('Bearer ', '')
         resp = lambda_client.invoke(
-            FunctionName='ValidateToken-test',
+            FunctionName='ValidateToken-prod',
             Payload=json.dumps({'token': token})
         )
         payload = json.loads(resp['Payload'].read())

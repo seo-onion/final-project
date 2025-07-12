@@ -23,7 +23,7 @@ module.exports.lambda_handler = async (event) => {
     }
     const token = auth.replace(/^Bearer\s+/i, '');
     const respVal = await lambda.send(new InvokeCommand({
-      FunctionName: 'ValidateToken-test',
+      FunctionName: 'ValidateToken-prod',
       Payload: JSON.stringify({ token }),
     }));
     const { statusCode: statusValidate } = JSON.parse(new TextDecoder().decode(respVal.Payload));
@@ -46,7 +46,7 @@ module.exports.lambda_handler = async (event) => {
 
 
     const queryResult = await db.send(new QueryCommand({
-      TableName: "t_productos-test",
+      TableName: "t_productos-prod",
       IndexName: 'SkuIndex',
       KeyConditionExpression: '#tid = :t AND #sku = :s',
       ExpressionAttributeNames: {
