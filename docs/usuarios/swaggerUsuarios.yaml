@@ -1,0 +1,86 @@
+---
+swagger: "2.0"
+info:
+  version: "2025-06-29T02:28:02Z"
+  title: "dev-api-usuarios"
+host: "iwrywt4dql.execute-api.us-east-1.amazonaws.com"
+basePath: "/dev"
+schemes:
+- "https"
+paths:
+  /user/login:
+    post:
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
+      parameters:
+         - in: "body"
+           name: "body"
+           required: true
+           schema:
+             type: object
+             properties:
+               region:
+                 type: string
+                 example: "Lima"
+               email:
+                 type: string
+                 example: "sebas@gmail.com"
+               name:
+                 type: string
+                 example: "sebastian"
+               lastname:
+                 type: string
+                 example: "hernandez"
+               password:
+                 type: string
+                 example: "123"
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        "500":
+          description: "500 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+  /user/register:
+    post:
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
+      parameters:
+         - in: "body"
+           name: "body"
+           required: true
+           schema:
+             type: object
+             properties:
+               region:
+                 type: string
+                 example: "Lima"
+               email:
+                 type: string
+                 example: "sebas@gmail.com"
+               name:
+                 type: string
+                 example: "sebastian"
+               lastname:
+                 type: string
+                 example: "hernandez"
+               password:
+                 type: string
+                 example: "123"
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        "500":
+          description: "500 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"

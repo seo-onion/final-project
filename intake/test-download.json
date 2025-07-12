@@ -1,0 +1,9 @@
+{
+  "tenant_id": "plaza-vea",
+  "sort_id": "compra-test-001",
+  "user_email": "test@example.com",
+  "total_amount": "150.50",
+  "productos": "[{\"product_id\":\"prod1\",\"name\":\"Producto Test\",\"price\":75.25,\"quantity\":2}]",
+  "created_at": "2025-07-10T06:32:49Z",
+  "status": "completed"
+}
