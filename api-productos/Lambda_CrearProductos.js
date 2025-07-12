@@ -14,7 +14,7 @@ module.exports.lambda_handler = async (event) => {
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
     const validateResp = await lambda.send(new InvokeCommand({
-      FunctionName: 'ValidateToken',
+      FunctionName: 'ValidateToken-test',
       Payload: JSON.stringify({ token }),
     }));
 
@@ -54,7 +54,7 @@ module.exports.lambda_handler = async (event) => {
     };
 
     await db.send(new PutCommand({
-      TableName: "t_productos-dev",
+      TableName: "t_productos-test",
       Item: item,
       ConditionExpression: 'attribute_not_exists(sort_id)'
     }));

@@ -16,7 +16,7 @@ custom:
 
 functions:
   create:
-    name: CreateCompra
+    name: CreateCompra-${self:provider.stage}
     handler: Lambda_CrearCompra.lambda_handler
     events:
       - http:
@@ -30,7 +30,7 @@ functions:
                 Authorization: true
 
   list:
-    name: ListCompras
+    name: ListCompras-${self:provider.stage}
     handler: Lambda_ListarCompras.lambda_handler
     events:
       - http:

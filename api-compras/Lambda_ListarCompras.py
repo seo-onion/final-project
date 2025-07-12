@@ -14,7 +14,7 @@ def lambda_handler(event, context):
             return {'statusCode': 401, 'body': 'Missing Authorization header'}
         token = auth_header.replace('Bearer ', '')
         resp = lambda_client.invoke(
-            FunctionName='ValidateToken',
+            FunctionName='ValidateToken-test',
             Payload=json.dumps({'token': token})
         )
         payload = json.loads(resp['Payload'].read())
