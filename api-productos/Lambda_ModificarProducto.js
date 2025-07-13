@@ -11,21 +11,42 @@ const {
 const lambda = new LambdaClient({});
 const db     = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Methods': 'OPTIONS,POST,PATCH',
+};
+
 module.exports.lambda_handler = async (event) => {
   try {
+    // Manejar preflight (CORS)
+    if (event.requestContext?.httpMethod === 'OPTIONS') {
+      return {
+        statusCode: 200,
+        headers: corsHeaders,
+        body: ''
+      };
+    }
+
     // 1. Autorización
     const auth = (event.headers || {}).Authorization || event.headers.authorization;
     if (!auth) {
-      return { statusCode: 401, body: JSON.stringify({ message: 'Missing Authorization header' }) };
+      return { statusCode: 401, headers: corsHeaders, body: JSON.stringify({ message: 'Missing Authorization header' }) };
     }
+
     const token = auth.replace(/^Bearer\s+/i, '');
     const valResp = await lambda.send(new InvokeCommand({
-      FunctionName: 'ValidateToken',
+      FunctionName: 'ValidateToken-dev',
       Payload: JSON.stringify({ token })
     }));
+
     const { statusCode: codeVal } = JSON.parse(new TextDecoder().decode(valResp.Payload));
     if (codeVal === 403) {
-      return { statusCode: 403, body: JSON.stringify({ message: 'Forbidden – Token inválido o expirado' }) };
+      return {
+        statusCode: 403,
+        headers: corsHeaders,
+        body: JSON.stringify({ message: 'Forbidden – Token inválido o expirado' })
+      };
     }
 
     // 2. Parsear body y validar tenant_id + sku
@@ -33,14 +54,16 @@ module.exports.lambda_handler = async (event) => {
     if (event.body) {
       body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
     }
+
     const { tenant_id, sku, ...updates } = body;
     if (!tenant_id) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo "tenant_id"' }) };
+      return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ message: 'Falta el campo "tenant_id"' }) };
     }
     if (!sku) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo "sku"' }) };
+      return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ message: 'Falta el campo "sku"' }) };
     }
 
+    // 3. Buscar producto por SKU
     const query = await db.send(new QueryCommand({
       TableName: "t_productos-dev",
       IndexName: 'SkuIndex',
@@ -51,14 +74,15 @@ module.exports.lambda_handler = async (event) => {
 
     const items = query.Items || [];
     if (items.length === 0) {
-      return { statusCode: 404, body: JSON.stringify({ message: 'Producto no encontrado' }) };
+      return { statusCode: 404, headers: corsHeaders, body: JSON.stringify({ message: 'Producto no encontrado' }) };
     }
+
     const { sort_id } = items[0];
 
-    // 4. Preparar expresión de actualización dinámica
+    // 4. Preparar atributos de actualización
     const attrs = Object.keys(updates);
     if (attrs.length === 0) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'No hay atributos para actualizar' }) };
+      return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ message: 'No hay atributos para actualizar' }) };
     }
 
     const ExpressionAttributeNames = {};
@@ -72,7 +96,7 @@ module.exports.lambda_handler = async (event) => {
       ExpressionAttributeValues[valKey] = updates[attr];
       setClauses.push(`${nameKey} = ${valKey}`);
     });
-    // opcional: registrar fecha de modificación
+
     const now = new Date().toISOString();
     ExpressionAttributeNames['#updatedAt'] = 'updatedAt';
     ExpressionAttributeValues[':now'] = now;
@@ -88,12 +112,13 @@ module.exports.lambda_handler = async (event) => {
       ReturnValues: 'ALL_NEW'
     };
 
-    // 5. Ejecutar UpdateCommand
+    // 5. Ejecutar actualización
     const result = await db.send(new UpdateCommand(updateParams));
     const updated = result.Attributes;
 
     return {
       statusCode: 200,
+      headers: corsHeaders,
       body: JSON.stringify({
         message: 'Producto actualizado',
         producto: updated
@@ -104,6 +129,7 @@ module.exports.lambda_handler = async (event) => {
     console.error('Error modificando producto:', error);
     return {
       statusCode: 500,
+      headers: corsHeaders,
       body: JSON.stringify({ message: `Error interno: ${error.message}` })
     };
   }
