@@ -19,13 +19,13 @@
       "Properties": {
         "Code": {
           "S3Bucket": "serverless-framework-deployments-us-east-1-89cfb0bf-81ae",
-          "S3Key": "serverless/api-compras/dev/1749620566125-2025-06-11T05:42:46.125Z/api-compras.zip"
+          "S3Key": "serverless/api-compras/dev/1752376260083-2025-07-13T03:11:00.083Z/api-compras.zip"
         },
         "Handler": "Lambda_CrearCompra.lambda_handler",
         "Runtime": "python3.12",
         "FunctionName": "CreateCompra",
         "MemorySize": 1024,
-        "Timeout": 29,
+        "Timeout": 30,
         "Role": "arn:aws:iam::659277875740:role/LabRole"
       },
       "DependsOn": [
@@ -37,37 +37,37 @@
       "Properties": {
         "Code": {
           "S3Bucket": "serverless-framework-deployments-us-east-1-89cfb0bf-81ae",
-          "S3Key": "serverless/api-compras/dev/1749620566125-2025-06-11T05:42:46.125Z/api-compras.zip"
+          "S3Key": "serverless/api-compras/dev/1752376260083-2025-07-13T03:11:00.083Z/api-compras.zip"
         },
         "Handler": "Lambda_ListarCompras.lambda_handler",
         "Runtime": "python3.12",
         "FunctionName": "ListCompras",
         "MemorySize": 1024,
-        "Timeout": 29,
+        "Timeout": 30,
         "Role": "arn:aws:iam::659277875740:role/LabRole"
       },
       "DependsOn": [
         "ListLogGroup"
       ]
     },
-    "CreateLambdaVersionCTV0Vc19oskjPlYJTtDQZwMFCNAySJKtTXs7kaVmYXE": {
+    "CreateLambdaVersionPnZgdGLb9A7vO3tx1pEJaCHxceRR2gdPKNvN7IA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateLambdaFunction"
         },
-        "CodeSha256": "4PDeSGpj/6ff60G3JZIFDRVRX5bxCn4nDsDOaq4ZBM4="
+        "CodeSha256": "5x3lWBRXKamB1DY0qvmqIjbVTKHW+1FPTq+OHIUF8A4="
       }
     },
-    "ListLambdaVersionOaKvd6XlSoMf2BNA1lQyy8XrteI63rLACbGFNZ8RI": {
+    "ListLambdaVersionpofrDjrXPBPhl40pIjA5vmQCUoXi2TKT9trbNpbL8": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ListLambdaFunction"
         },
-        "CodeSha256": "4PDeSGpj/6ff60G3JZIFDRVRX5bxCn4nDsDOaq4ZBM4="
+        "CodeSha256": "5x3lWBRXKamB1DY0qvmqIjbVTKHW+1FPTq+OHIUF8A4="
       }
     },
     "ApiGatewayRestApi": {
@@ -324,7 +324,7 @@
         "Name": "api-compras-dev | Validate request body and querystring parameters"
       }
     },
-    "ApiGatewayDeployment1749620559025": {
+    "ApiGatewayDeployment1752376253107": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -451,7 +451,7 @@
     "CreateLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateLambdaVersionCTV0Vc19oskjPlYJTtDQZwMFCNAySJKtTXs7kaVmYXE"
+        "Ref": "CreateLambdaVersionPnZgdGLb9A7vO3tx1pEJaCHxceRR2gdPKNvN7IA"
       },
       "Export": {
         "Name": "sls-api-compras-dev-CreateLambdaFunctionQualifiedArn"
@@ -460,7 +460,7 @@
     "ListLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ListLambdaVersionOaKvd6XlSoMf2BNA1lQyy8XrteI63rLACbGFNZ8RI"
+        "Ref": "ListLambdaVersionpofrDjrXPBPhl40pIjA5vmQCUoXi2TKT9trbNpbL8"
       },
       "Export": {
         "Name": "sls-api-compras-dev-ListLambdaFunctionQualifiedArn"

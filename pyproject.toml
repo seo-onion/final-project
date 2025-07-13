@@ -1,0 +1,18 @@
+[project]
+name = "final-cloud-project"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Alexander Morales-Panitz",email = "alexander@moralespanitz.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "requests (>=2.32.4,<3.0.0)",
+    "boto3 (>=1.39.4,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

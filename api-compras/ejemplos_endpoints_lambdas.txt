@@ -1,0 +1,48 @@
+# Ejemplos de llamadas a endpoints Lambda (api-compras)
+
+## 1. Lambda_CrearCompra
+
+### Ejemplo HTTP (API Gateway)
+POST https://<API_ID>.execute-api.<REGION>.amazonaws.com/prod/crear-compra
+Headers:
+    Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+Body:
+{
+    "region": "<region>",
+    "user_sort_id": "<user_sort_id>"
+}
+
+### Ejemplo AWS CLI
+aws lambda invoke \
+  --function-name Lambda_CrearCompra \
+  --payload '{"headers": {"Authorization": "Bearer <TOKEN>"}, "body": "{\"region\": \"<region>\", \"user_sort_id\": \"<user_sort_id>\"}"}' \
+  response.json
+
+
+## 2. Lambda_ListarCompras
+
+### Ejemplo HTTP (API Gateway)
+POST https://<API_ID>.execute-api.<REGION>.amazonaws.com/prod/listar-compras
+Headers:
+    Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+Body:
+{
+    "tenant_id": "<tenant_id>",
+    "user_id": "<user_id>"
+}
+
+### Ejemplo AWS CLI
+aws lambda invoke \
+  --function-name Lambda_ListarCompras \
+  --payload '{"headers": {"Authorization": "Bearer <TOKEN>"}, "body": "{\"tenant_id\": \"<tenant_id>\", \"user_id\": \"<user_id>\"}"}' \
+  response.json
+
+
+# Notas
+- Reemplaza <API_ID>, <REGION>, <TOKEN>, <region>, <user_sort_id>, <tenant_id> y <user_id> por los valores correspondientes.
+- Si tus Lambdas están expuestas por API Gateway, los endpoints pueden variar según tu configuración.
+- Si necesitas el ejemplo para otro método HTTP (GET, PUT, etc.) o detalles adicionales, házmelo saber.

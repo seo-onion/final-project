@@ -1,0 +1,49 @@
+# 1. Registro de usuario administrador
+POST https://iwrywt4dql.execute-api.us-east-1.amazonaws.com/dev/user/register
+Descripción: Registra un usuario administrador (necesario para autenticación y pruebas).
+Payload ejemplo:
+{
+  "region": "plazavea",
+  "email": "admin@plazavea",
+  "password": "admin123",
+  "name": "Admin",
+  "lastname": "PlazaVea"
+}
+
+# 2. Login de usuario administrador
+POST https://iwrywt4dql.execute-api.us-east-1.amazonaws.com/dev/user/login
+Descripción: Realiza login y obtiene un token JWT para autenticación.
+Payload ejemplo:
+{
+  "region": "plazavea",
+  "email": "admin@plazavea",
+  "password": "admin123"
+}
+
+# 3. Creación de productos (repetir para cada producto)
+POST https://m34zhwbth7.execute-api.us-east-1.amazonaws.com/dev/product/create
+Descripción: Crea un producto nuevo en el sistema.
+Payload ejemplo:
+{
+  "tenant_id": "plazavea",
+  "nombre": "Laptop HP Pavilion 1712345678",
+  "descripcion": "Laptop HP Pavilion 15.6 pulgadas, Intel Core i5, 8GB RAM, 256GB SSD",
+  "precio": 2499.99
+}
+
+# 4. Creación de compras (repetir para cada compra)
+POST https://5efu0bvbt2.execute-api.us-east-1.amazonaws.com/dev/compra/create
+Descripción: Crea una compra asociada a un usuario y productos.
+Payload ejemplo:
+{
+  "region": "plazavea",
+  "user_sort_id": "admin@plazavea#Admin#PlazaVea",
+  "productos": [
+    {
+      "nombre": "Laptop HP Pavilion 1712345678",
+      "cantidad": 1,
+      "precio": 2499.99
+    }
+  ],
+  "total": 2499.99
+} 

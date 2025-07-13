@@ -1,5 +1,4 @@
 app: proyecto-final
-org: seonion
 
 service: api-usuarios
 
@@ -89,5 +88,5 @@ resources:
           AttributeName: expires_ts
           Enabled: true
 
-plugins:
-  - serverless-python-requirements
+# plugins:
+#   - serverless-python-requirements
