@@ -76,7 +76,13 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'body': json.dumps({
                 'token':   token,
-                'expires': exp_iso
+                'expires': exp_iso,
+                'user': {
+                    'name':     user.get('name'),
+                    'lastname': user.get('lastname'),
+                    'email':    user.get('email'),
+                    'region':   user.get('tenant_id')
+                }
             })
         }
 
