@@ -48,18 +48,8 @@ def lambda_handler(event, context):
 
         # Validar campos requeridos
         region = body.get('region')
-        user_sort_id = body.get('user_sort_id')
+        email = body.get('email')  # Usamos email como user_sort_id
         productos = body.get('productos', [])
-        total = body.get('total', 0)
-        
-        # Convertir total a Decimal si es necesario
-        if isinstance(total, (int, float)):
-            total = Decimal(str(total))
-            
-        # Convertir precios en productos a Decimal
-        for producto in productos:
-            if 'precio' in producto and isinstance(producto['precio'], (int, float)):
-                producto['precio'] = Decimal(str(producto['precio']))
 
         if not region:
             return {
@@ -67,10 +57,10 @@ def lambda_handler(event, context):
                 'body': json.dumps({'message': 'Falta el campo "region"'}, cls=DecimalEncoder)
             }
         
-        if not user_sort_id:
+        if not email:
             return {
                 'statusCode': 400,
-                'body': json.dumps({'message': 'Falta el campo "user_sort_id"'}, cls=DecimalEncoder)
+                'body': json.dumps({'message': 'Falta el campo "email"'}, cls=DecimalEncoder)
             }
 
         if not productos:
@@ -79,42 +69,55 @@ def lambda_handler(event, context):
                 'body': json.dumps({'message': 'Falta el campo "productos" o está vacío'}, cls=DecimalEncoder)
             }
 
+        # Convertir precios a Decimal
+        for producto in productos:
+            if 'precio' in producto and isinstance(producto['precio'], (int, float)):
+                producto['precio'] = Decimal(str(producto['precio']))
+
+        # Calcular total en backend
+        total = sum(p['precio'] for p in productos)
+
         # 3. Generar ID único para la compra
         compra_id = str(uuid.uuid4())
         timestamp = datetime.now().isoformat()
-        
-        # El sort_id será: user_sort_id#timestamp#compra_id
-        sort_id = f"{user_sort_id}#{timestamp}#{compra_id}"
 
-        # 4. Crear el item de compra
+        # 4. Crear sort_id con email como base
+        sort_id = f"{email}#{timestamp}#{compra_id}"
+
+        # 5. Crear item de compra
         compra_item = {
             'tenant_id': region,
             'sort_id': sort_id,
             'compra_id': compra_id,
-            'user_sort_id': user_sort_id,
+            'user_sort_id': email,
             'productos': productos,
             'total': total,
             'fecha_compra': timestamp,
             'estado': 'completada'
         }
 
-        # 5. Guardar en DynamoDB
+        # 6. Guardar en DynamoDB
         table = dynamodb.Table(COMPRAS_TABLE)
         table.put_item(Item=compra_item)
 
-        # 6. Respuesta exitosa
+        # 7. Respuesta exitosa
         return {
             'statusCode': 201,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST'
+            },
             'body': json.dumps({
                 'message': 'Compra creada exitosamente',
                 'compra': {
                     'compra_id': compra_id,
                     'tenant_id': region,
-                    'user_sort_id': user_sort_id,
+                    'user_sort_id': email,
                     'total': total,
                     'fecha_compra': timestamp,
                     'productos_count': len(productos),
-                    'productos': productos  # Incluir productos en la respuesta
+                    'productos': productos
                 }
             }, cls=DecimalEncoder)
         }
