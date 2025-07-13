@@ -59,7 +59,13 @@ def lambda_handler(event, context):
         return {
             'statusCode': 200,
             'body': json.dumps({
-                'message': 'User registered successfully'
+                'message': 'User registered successfully',
+                'user': {
+                    'name': name,
+                    'lastname': lastname,
+                    'email': email,
+                    'region': region
+                }
             })
         }
 
