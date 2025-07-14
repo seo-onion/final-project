@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const banners = [
   {
@@ -73,7 +74,7 @@ export function HeroBanner() {
                   <img
                     src={banner.image || "/placeholder.svg"}
                     alt={banner.title}
-                    className="w-full h-auto max-w-md mx-auto"
+                    className="w-full h-auto max-w-md mx-auto rounded-md"
                   />
                 </div>
               </div>

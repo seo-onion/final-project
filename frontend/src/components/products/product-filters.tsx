@@ -10,6 +10,7 @@ interface ProductFiltersProps {
   onPriceRangeChange: (range: number[]) => void
   selectedCategory: string
   priceRange: number[]
+  maxPrice: number
 }
 
 const categories = [
@@ -26,6 +27,7 @@ export function ProductFilters({
   onPriceRangeChange,
   selectedCategory,
   priceRange,
+  maxPrice,
 }: ProductFiltersProps) {
   return (
     <div className="space-y-6">
@@ -54,7 +56,7 @@ export function ProductFilters({
             <Slider
               value={priceRange}
               onValueChange={onPriceRangeChange}
-              max={1000}
+              max={maxPrice}
               min={0}
               step={10}
               className="w-full"

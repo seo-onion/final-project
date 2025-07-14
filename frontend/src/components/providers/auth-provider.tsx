@@ -38,7 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string) => {
-    // Mock authentication
     try {
       const response = await fetch("https://iwrywt4dql.execute-api.us-east-1.amazonaws.com/dev/user/login", {
         method: "POST",
@@ -99,6 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const data = await response.json()
+      // console.log(data)
+      const parsedBody = typeof data.body === "string" ? JSON.parse(data.body) : data.body
 
       if (data.statusCode === 409) {
         const body = JSON.parse(data.body)
@@ -106,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const newUser: User = {
-        ...data.body.user,
+        ...parsedBody.user,
         tenant: "customer"
       }
       setUser(newUser)

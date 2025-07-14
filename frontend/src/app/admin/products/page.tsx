@@ -292,7 +292,9 @@ export default function AdminProductsPage() {
                       <div className="flex items-center space-x-2 mt-2">
                         <Badge variant="secondary">{product.category}</Badge>
                         <span className="font-bold text-red-600">S/ {product.price}</span>
+                        {/*
                         <span className="text-sm text-gray-500">Stock: {product.stock}</span>
+                        */}
                       </div>
                     </div>
                   </div>

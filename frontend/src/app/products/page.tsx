@@ -9,6 +9,8 @@ import { Pagination } from "@/components/ui/pagination"
 import { useAuth } from "@/components/providers/auth-provider"
 import type { Product } from "@/types"
 
+import { useSearchParams } from "next/navigation"
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
@@ -16,6 +18,7 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
   const [priceRange, setPriceRange] = useState([0, 1000])
+  const [maxPrice, setMaxPrice] = useState(1000)
   const { user } = useAuth()
 
   const productsPerPage = 12
@@ -50,6 +53,9 @@ export default function ProductsPage() {
         }))
 
         setProducts(mappedProducts)
+        const maxPrecio = Math.max(...mappedProducts.map((p) => p.price))
+        setMaxPrice(maxPrecio)
+        setPriceRange([0, maxPrecio])
         setFilteredProducts(mappedProducts)
       } catch (error) {
         console.error("Error al cargar productos:", error)
@@ -103,6 +109,7 @@ export default function ProductsPage() {
               onPriceRangeChange={setPriceRange}
               selectedCategory={selectedCategory}
               priceRange={priceRange}
+              maxPrice={maxPrice}
             />
           </div>
 

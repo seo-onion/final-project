@@ -90,8 +90,8 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
                 id="price"
                 type="number"
                 step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: Number.parseFloat(e.target.value) })}
+                value={formData.price.toString()}
+                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
                 required
               />
             </div>
@@ -102,8 +102,8 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
                 id="originalPrice"
                 type="number"
                 step="0.01"
-                value={formData.originalPrice}
-                onChange={(e) => setFormData({ ...formData, originalPrice: Number.parseFloat(e.target.value) })}
+                value={formData.originalPrice.toString()}
+                onChange={(e) => setFormData({ ...formData, originalPrice: parseFloat(e.target.value) || 0 })}
               />
             </div>
             */}
@@ -112,8 +112,8 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
               <Input
                 id="stock"
                 type="number"
-                value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: Number.parseInt(e.target.value) })}
+                value={formData.stock.toString()}
+                onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
                 required
               />
             </div>
@@ -122,16 +122,16 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Categoría</Label>
-              <Select onValueChange={(value) => setFormData({ ...formData, category: value })}>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona una categoría" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="supermercado">Supermercado</SelectItem>
-                  <SelectItem value="electro">Electro</SelectItem>
-                  <SelectItem value="hogar">Hogar</SelectItem>
-                  <SelectItem value="cuidado-personal">Cuidado Personal</SelectItem>
-                  <SelectItem value="moda">Moda</SelectItem>
+                  <SelectItem value="Supermercado">Supermercado</SelectItem>
+                  <SelectItem value="Electro">Electro</SelectItem>
+                  <SelectItem value="Hogar">Hogar</SelectItem>
+                  <SelectItem value="Cuidado-personal">Cuidado Personal</SelectItem>
+                  <SelectItem value="Moda">Moda</SelectItem>
                 </SelectContent>
               </Select>
             </div>

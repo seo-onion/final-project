@@ -9,10 +9,11 @@ import { useAuth } from "@/components/providers/auth-provider"
 import type { Order } from "@/types"
 import { Eye, Package } from "lucide-react"
 import Link from "next/link"
-import router from "next/router"
+import { useRouter } from "next/navigation"
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
+  const router = useRouter()
   const { user } = useAuth()
 
   useEffect(() => {
@@ -52,9 +53,9 @@ export default function OrdersPage() {
             quantity: 1,
             price: parseFloat(p.precio),
           })),
-          subtotal: parseFloat(compra.monto_total),
-          shipping: parseFloat(compra.monto_total) > 99 ? 0 : 15,
-          total: parseFloat(compra.monto_total) > 99 ? parseFloat(compra.monto_total) : parseFloat(compra.monto_total) + 15,
+          subtotal: parseFloat(compra.total),
+          shipping: parseFloat(compra.total) > 99 ? 0 : 15,
+          total: parseFloat(compra.total) > 99 ? parseFloat(compra.total) : parseFloat(compra.total) + 15,
         }))
 
         setOrders(parsedOrders)
@@ -128,7 +129,9 @@ export default function OrdersPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-lg">Pedido #{order.id}</CardTitle>
+                      {/*
                       <p className="text-gray-600">{new Date(order.createdAt).toLocaleDateString("es-PE")}</p>
+                      */}
                     </div>
                     <Badge className={getStatusColor(order.status)}>{getStatusText(order.status)}</Badge>
                   </div>
