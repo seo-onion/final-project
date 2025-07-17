@@ -23,7 +23,12 @@ functions:
       - http:
           path: /product/create
           method: post
-          cors: true
+          cors:
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda-proxy  
           request:
             parameters:
@@ -37,7 +42,12 @@ functions:
       - http:
           path: /product/find
           method: post
-          cors: true
+          cors:
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda-proxy 
           request:
             parameters:
@@ -51,7 +61,12 @@ functions:
       - http:
           path: /product/list
           method: post
-          cors: true
+          cors:
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda-proxy 
           request:
             parameters:
@@ -65,7 +80,12 @@ functions:
       - http:
           path: /product/patch
           method: patch
-          cors: true
+          cors:
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda-proxy 
           request:
             parameters:
@@ -79,7 +99,12 @@ functions:
       - http:
           path: /product/delete
           method: delete
-          cors: true
+          cors:
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda-proxy 
           request:
             parameters:

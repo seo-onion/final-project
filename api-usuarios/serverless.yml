@@ -28,7 +28,12 @@ functions:
       - http:
           path: /user/register
           method: post
-          cors: true
+          cors:
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda
 
   login:
@@ -38,7 +43,12 @@ functions:
       - http:
           path: /user/login
           method: post
-          cors: true
+          cors:
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda
   
   validateToken:

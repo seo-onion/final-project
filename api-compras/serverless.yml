@@ -22,12 +22,20 @@ functions:
       - http:
           path: /compra/create
           method: post
-          cors: true
+          cors: 
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda-proxy
           request:
             parameters:
               headers:
                 Authorization: true
+
+
+
 
   list:
     name: ListCompras-${self:provider.stage}
@@ -36,7 +44,12 @@ functions:
       - http:
           path: /compra/list
           method: post
-          cors: true
+          cors:
+            origin: http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
           integration: lambda-proxy
           request:
             parameters:
