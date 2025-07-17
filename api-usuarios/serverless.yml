@@ -25,7 +25,7 @@ functions:
     name: CreateUser-${self:provider.stage}
     handler: Lambda_UserCreate.lambda_handler
     events:
-      - http:
+      - httpApi:
           path: /user/register
           method: post
           cors:
@@ -40,7 +40,7 @@ functions:
     name: LoginUser-${self:provider.stage}
     handler: Lambda_UserLogin.lambda_handler
     events:
-      - http:
+      - httpApi:
           path: /user/login
           method: post
           cors:

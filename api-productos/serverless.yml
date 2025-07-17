@@ -20,7 +20,7 @@ functions:
     name: CreateProduct-${self:provider.stage}
     handler: Lambda_CrearProductos.lambda_handler
     events:
-      - http:
+      - httpApi:
           path: /product/create
           method: post
           cors:
@@ -39,7 +39,7 @@ functions:
     name: FindProduct-${self:provider.stage}
     handler: Lambda_FindProduct.lambda_handler
     events:
-      - http:
+      - httpApi:
           path: /product/find
           method: post
           cors:
@@ -58,7 +58,7 @@ functions:
     name: listProducts-${self:provider.stage}
     handler: Lambda_ListarProductos.lambda_handler
     events:
-      - http:
+      - httpApi:
           path: /product/list
           method: post
           cors:
@@ -77,7 +77,7 @@ functions:
     name: patchProducts-${self:provider.stage}
     handler: Lambda_ModificarProducto.lambda_handler
     events:
-      - http:
+      - httpApi:
           path: /product/patch
           method: patch
           cors:
@@ -96,7 +96,7 @@ functions:
     name: deleteProducts-${self:provider.stage}
     handler: Lambda_EliminarProducto.lambda_handler
     events:
-      - http:
+      - httpApi:
           path: /product/delete
           method: delete
           cors:
