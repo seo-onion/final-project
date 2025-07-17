@@ -1,7 +1,7 @@
 'use strict';
 
 const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
-const { DynamoDBClient }              = require('@aws-sdk/client-dynamodb');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const {
   DynamoDBDocumentClient,
   QueryCommand,
@@ -9,15 +9,24 @@ const {
 } = require('@aws-sdk/lib-dynamodb');
 
 const lambda = new LambdaClient({});
-const db     = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 module.exports.lambda_handler = async (event) => {
   try {
     // 1. Autorización
     const headers = event.headers || {};
-    const auth    = headers.Authorization || headers.authorization;
+    const auth = headers.Authorization || headers.authorization;
     if (!auth) {
-      return { statusCode: 401, body: JSON.stringify({ message: 'Missing Authorization header' }) };
+      return {
+        statusCode: 401,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: 'Missing Authorization header' })
+      };
+
     }
     const token = auth.replace(/^Bearer\s+/i, '');
     const valResp = await lambda.send(new InvokeCommand({
@@ -28,8 +37,14 @@ module.exports.lambda_handler = async (event) => {
     if (codeVal === 403) {
       return {
         statusCode: 403,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ message: 'Forbidden – Token inválido o expirado' })
       };
+
     }
 
     // 2. Parsear body y validar tenant_id + sku
@@ -41,24 +56,51 @@ module.exports.lambda_handler = async (event) => {
     }
     const { tenant_id, sku } = body;
     if (!tenant_id) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo "tenant_id"' }) };
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: 'Falta el campo "tenant_id"' })
+      };
+
     }
     if (!sku) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Falta el campo "sku"' }) };
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: 'Falta el campo "sku"' })
+      };
+
     }
 
 
     const query = await db.send(new QueryCommand({
       TableName: "t_productos-prod",
-      IndexName:  'SkuIndex',
+      IndexName: 'SkuIndex',
       KeyConditionExpression: '#tid = :t AND #sku = :s',
-      ExpressionAttributeNames:  { '#tid': 'tenant_id', '#sku': 'sku' },
+      ExpressionAttributeNames: { '#tid': 'tenant_id', '#sku': 'sku' },
       ExpressionAttributeValues: { ':t': tenant_id, ':s': sku }
     }));
 
     const items = query.Items || [];
     if (items.length === 0) {
-      return { statusCode: 404, body: JSON.stringify({ message: 'Producto no encontrado' }) };
+      return {
+        statusCode: 404,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: 'Producto no encontrado' })
+      };
+
     }
     const { sort_id } = items[0];
 
@@ -71,22 +113,34 @@ module.exports.lambda_handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         message: 'Producto eliminado',
         producto: { tenant_id, sku, sort_id }
       })
     };
 
+
   } catch (error) {
     console.error('Error eliminando producto:', error);
     const status = error.name === 'ConditionalCheckFailedException' ? 404 : 500;
     return {
       statusCode: status,
+      headers: {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         message: status === 404
           ? 'Producto no encontrado'
           : `Error interno: ${error.message}`
       })
     };
+
   }
 };

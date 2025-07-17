@@ -14,7 +14,16 @@ def lambda_handler(event, context):
         headers = event.get('headers') or {}
         auth_header = headers.get('Authorization') or headers.get('authorization')
         if not auth_header:
-            return {'statusCode': 401, 'body': json.dumps({'message': 'Missing Authorization header'})}
+            return {
+    'statusCode': 401,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': json.dumps({'message': 'Missing Authorization header'})
+}
+
         token = auth_header.replace('Bearer ', '')
 
         resp = lambda_client.invoke(
@@ -24,9 +33,15 @@ def lambda_handler(event, context):
         payload = json.loads(resp['Payload'].read())
         if payload.get('statusCode') == 403:
             return {
-                'statusCode': 403,
-                'body': json.dumps({'message': 'Forbidden – Token inválido o expirado'})
-            }
+    'statusCode': 403,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': json.dumps({'message': 'Forbidden – Token inválido o expirado'})
+}
+
 
         # 2. Parsear body o queryStringParameters
         body = event.get('body') or {}
@@ -38,9 +53,15 @@ def lambda_handler(event, context):
         user_sort_id  = body.get('user_sort_id') or qs.get('user_sort_id')
         if not region or not user_sort_id:
             return {
-                'statusCode': 400,
-                'body': json.dumps({'message': 'Faltan region o user_sort_id'})
-            }
+    'statusCode': 400,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': json.dumps({'message': 'Faltan region o user_sort_id'})
+}
+
 
         # 3. Realizar Query en DynamoDB usando sort_id prefix
         table = dynamodb.Table(COMPRAS_TABLE)
@@ -52,13 +73,25 @@ def lambda_handler(event, context):
 
         # 4. Devolver lista de compras
         return {
-            'statusCode': 200,
-            'body': json.dumps({'compras': items})
-        }
+    'statusCode': 200,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': json.dumps({'compras': items})
+}
+
 
     except Exception as e:
         print('Error listando compras:', e)
         return {
-            'statusCode': 500,
-            'body': json.dumps({'message': f'Error interno: {str(e)}'})
-        }
+    'statusCode': 500,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': json.dumps({'message': f'Error interno: {str(e)}'})
+}
+

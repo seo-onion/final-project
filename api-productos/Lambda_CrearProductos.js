@@ -9,7 +9,16 @@ module.exports.lambda_handler = async (event) => {
   try {
     const authHeader = event.headers.Authorization || event.headers.authorization;
     if (!authHeader) {
-      return { statusCode: 401, body: 'Missing Authorization header' };
+      return {
+        statusCode: 401,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
+        body: 'Missing Authorization header'
+      };
+
     }
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
@@ -22,19 +31,52 @@ module.exports.lambda_handler = async (event) => {
     if (payload.statusCode === 403) {
       return {
         statusCode: 403,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ message: 'Forbidden - Token inválido o expirado' })
       };
+
     }
 
     const { tenant_id, nombre, precio, descripcion } = JSON.parse(event.body);
     if (!tenant_id) {
-      return { statusCode: 400, body: 'El campo "tenant_id" es obligatorio' };
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
+        body: 'El campo "tenant_id" es obligatorio'
+      };
+
     }
     if (!nombre) {
-      return { statusCode: 400, body: 'El campo "nombre" es obligatorio' };
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
+        body: 'El campo "nombre" es obligatorio'
+      };
+
     }
     if (precio == null) {
-      return { statusCode: 400, body: 'El campo "precio" es obligatorio' };
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
+        body: 'El campo "precio" es obligatorio'
+      };
+
     }
 
     // SKU permanece como atributo independiente
@@ -46,7 +88,7 @@ module.exports.lambda_handler = async (event) => {
     const item = {
       tenant_id,
       sort_id,
-      sku,          
+      sku,
       nombre,
       precio,
       descripcion: descripcion ?? '',
@@ -61,20 +103,32 @@ module.exports.lambda_handler = async (event) => {
 
     return {
       statusCode: 201,
+      headers: {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         message: 'Producto creado',
         producto: { tenant_id, sku, nombre, precio, sort_id }
       })
     };
 
+
   } catch (error) {
     console.error('Error creando producto:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         message: `Error interno: ${error.message}`,
         stack: error.stack
       })
     };
+
   }
 };

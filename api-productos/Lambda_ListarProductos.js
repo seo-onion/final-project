@@ -25,7 +25,7 @@ module.exports.lambda_handler = async (event) => {
     }
     const token = auth.replace(/^Bearer\s+/i, '');
     const valResp = await lambda.send(new InvokeCommand({
-      FunctionName: 'ValidateToken-prod',
+      FunctionName: 'ValidateToken-test',
       Payload: JSON.stringify({ token })
     }));
     const { statusCode: codeVal } = JSON.parse(new TextDecoder().decode(valResp.Payload));
@@ -70,7 +70,7 @@ module.exports.lambda_handler = async (event) => {
     }
 
     const params = {
-      TableName: "t_productos-prod",
+      TableName: "t_productos-test",
       IndexName: undefined, // omitimos GSI, usamos tabla primaria
       KeyConditionExpression: '#tid = :t',
       ExpressionAttributeNames: { '#tid': 'tenant_id' },
@@ -105,7 +105,13 @@ module.exports.lambda_handler = async (event) => {
     console.error('Error listando productos:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ message: `Error interno: ${error.message}` })
     };
+
   }
 };

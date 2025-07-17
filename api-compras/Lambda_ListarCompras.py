@@ -11,7 +11,16 @@ def lambda_handler(event, context):
         # 1. Validar token
         auth_header = event['headers'].get('Authorization') or event['headers'].get('authorization')
         if not auth_header:
-            return {'statusCode': 401, 'body': 'Missing Authorization header'}
+            return {
+    'statusCode': 401,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': 'Missing Authorization header'
+}
+
         token = auth_header.replace('Bearer ', '')
         resp = lambda_client.invoke(
             FunctionName='ValidateToken-prod',
@@ -19,7 +28,16 @@ def lambda_handler(event, context):
         )
         payload = json.loads(resp['Payload'].read())
         if payload.get('statusCode') == 403:
-            return {'statusCode': 403, 'body': json.dumps({'message': 'Forbidden - Token inválido o expirado'})}
+            return {
+    'statusCode': 403,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': json.dumps({'message': 'Forbidden - Token inválido o expirado'})
+}
+
 
         # 2. Parsear body o query
         body = event.get('body') or {}
@@ -28,7 +46,16 @@ def lambda_handler(event, context):
         tenant_id = body.get('tenant_id') or event.get('queryStringParameters', {}).get('tenant_id')
         user_id = body.get('user_id') or event.get('queryStringParameters', {}).get('user_id')
         if not tenant_id or not user_id:
-            return {'statusCode': 400, 'body': 'Faltan tenant_id o user_id'}
+            return {
+    'statusCode': 400,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': 'Faltan tenant_id o user_id'
+}
+
 
         # 3. Query DynamoDB
         resp = table.query(
@@ -36,12 +63,23 @@ def lambda_handler(event, context):
         )
         items = resp.get('Items', [])
         return {
-            'statusCode': 200,
-            'body': json.dumps({'compras': items})
-        }
+    'statusCode': 200,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': json.dumps({'compras': items})
+}
+
     except Exception as e:
         print('Error listando compras:', e)
         return {
-            'statusCode': 500,
-            'body': json.dumps({'message': f'Error interno: {str(e)}'})
-        } 
+    'statusCode': 500,
+    'headers': {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+    },
+    'body': json.dumps({'message': f'Error interno: {str(e)}'})
+}
