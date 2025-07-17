@@ -34,7 +34,7 @@ functions:
               - Content-Type
               - Authorization
             allowCredentials: false
-          integration: lambda
+          integration: lambda-proxy
 
   login:
     name: LoginUser-${self:provider.stage}
@@ -49,7 +49,7 @@ functions:
               - Content-Type
               - Authorization
             allowCredentials: false
-          integration: lambda
+          integration: lambda-proxy
   
   validateToken:
     name: ValidateToken-${self:provider.stage}
