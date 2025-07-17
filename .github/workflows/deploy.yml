@@ -31,10 +31,10 @@ jobs:
           aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}   
           aws-region:            us-east-1
 
-        # Eliminar los recursos existentes antes de desplegar
-      # - name: Remove existing resources
-      #   run: sls remove --stage dev --config ./api-usuarios/serverless.yml  # Esto eliminará los recursos para api-productos
-      #   continue-on-error: true # Esto permitirá continuar aunque el paso falle
+      - name: Remove ${{ matrix.service }} (clean slate)
+        working-directory: ./${{ matrix.service }}
+        run: sls remove --stage ${{ github.ref_name }} --verbose
+        continue-on-error: true  # Si no existe, no falles
           
 
       # Instalar dependencias Python solo para api-usuarios
