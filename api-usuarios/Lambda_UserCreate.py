@@ -23,10 +23,16 @@ def lambda_handler(event, context):
         if not (region and email and password and name and lastname):
             return {
                 'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                    'Content-Type': 'application/json'
+                },
                 'body': json.dumps({
                     'error': 'Invalid request body: missing region, email, password, name or lastname'
                 })
             }
+
 
         dynamodb    = boto3.resource('dynamodb')
         t_usuarios  = dynamodb.Table('t_usuario-prod')
@@ -39,8 +45,14 @@ def lambda_handler(event, context):
         if resp.get('Count', 0) > 0:
             return {
                 'statusCode': 409,
+                'headers': {
+                    'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                    'Content-Type': 'application/json'
+                },
                 'body': json.dumps({'error': 'Email ya registrado'})
             }
+
         
         # Generamos el sort_id como email#name#lastname
         hashed_password = hash_password(password)
@@ -58,14 +70,26 @@ def lambda_handler(event, context):
         
         return {
             'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                'Content-Type': 'application/json'
+            },
             'body': json.dumps({
                 'message': 'User registered successfully'
             })
         }
 
+
     except Exception as e:
         print("Exception:", str(e))
         return {
             'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                'Content-Type': 'application/json'
+            },
             'body': json.dumps({'error': str(e)})
         }
+

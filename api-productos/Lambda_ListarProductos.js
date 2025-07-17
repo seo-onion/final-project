@@ -5,17 +5,23 @@ const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, QueryCommand } = require('@aws-sdk/lib-dynamodb');
 
 const lambda = new LambdaClient({});
-const db     = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 module.exports.lambda_handler = async (event) => {
   try {
     const headers = event.headers || {};
-    const auth    = headers.Authorization || headers.authorization;
+    const auth = headers.Authorization || headers.authorization;
     if (!auth) {
       return {
         statusCode: 401,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ message: 'Missing Authorization header' })
       };
+
     }
     const token = auth.replace(/^Bearer\s+/i, '');
     const valResp = await lambda.send(new InvokeCommand({
@@ -26,8 +32,14 @@ module.exports.lambda_handler = async (event) => {
     if (codeVal === 403) {
       return {
         statusCode: 403,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ message: 'Forbidden – Token inválido o expirado' })
       };
+
     }
 
     // 2. Leer parámetros de paginación y tenant
@@ -40,22 +52,28 @@ module.exports.lambda_handler = async (event) => {
     }
     const qs = event.queryStringParameters || {};
 
-    const tenant_id   = body.tenant_id || qs.tenant_id;
+    const tenant_id = body.tenant_id || qs.tenant_id;
     const pageSize = parseInt(body.pageSize || qs.pageSize || '20', 10);
-    const lastKey  = body.lastKey || qs.lastKey ? JSON.parse(body.lastKey) : undefined;
+    const lastKey = body.lastKey || qs.lastKey ? JSON.parse(body.lastKey) : undefined;
 
     if (!tenant_id) {
       return {
         statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ message: 'Falta el campo "tenant_id"' })
       };
+
     }
 
     const params = {
       TableName: "t_productos-prod",
       IndexName: undefined, // omitimos GSI, usamos tabla primaria
       KeyConditionExpression: '#tid = :t',
-      ExpressionAttributeNames:  { '#tid': 'tenant_id' },
+      ExpressionAttributeNames: { '#tid': 'tenant_id' },
       ExpressionAttributeValues: { ':t': tenant_id },
       Limit: pageSize,
       ScanIndexForward: false    // false = orden descendente (opcional)
@@ -71,11 +89,17 @@ module.exports.lambda_handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         products: items,
         lastKey: result.LastEvaluatedKey || null
       })
     };
+
 
   } catch (error) {
     console.error('Error listando productos:', error);

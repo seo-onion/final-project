@@ -22,10 +22,16 @@ def lambda_handler(event, context):
         if not (tenant_id and email and password):
             return {
                 'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                    'Content-Type': 'application/json'
+                },
                 'body': json.dumps({
                     'error': 'region, email y password son obligatorios'
                 })
             }
+
 
         dynamodb = boto3.resource('dynamodb')
         users_tbl = dynamodb.Table('t_usuario-prod')
@@ -42,8 +48,14 @@ def lambda_handler(event, context):
         if not items:
             return {
                 'statusCode': 403,
+                'headers': {
+                    'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                    'Content-Type': 'application/json'
+                },
                 'body': json.dumps({'error': 'Usuario no existe'})
             }
+
 
         user = items[0]
 
@@ -51,8 +63,14 @@ def lambda_handler(event, context):
         if hash_password(password) != user.get('password'):
             return {
                 'statusCode': 403,
+                'headers': {
+                    'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                    'Content-Type': 'application/json'
+                },
                 'body': json.dumps({'error': 'Password incorrecto'})
             }
+
 
         # 5) Generar token y expiración
         token = str(uuid.uuid4())
@@ -74,15 +92,27 @@ def lambda_handler(event, context):
         # 7) Responder con token y expiración
         return {
             'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                'Content-Type': 'application/json'
+            },
             'body': json.dumps({
                 'token':   token,
                 'expires': exp_iso
             })
         }
 
+
     except Exception as e:
         print("Exception:", str(e))
         return {
             'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': 'http://proyecto-final-plaza-vea.s3-website-us-east-1.amazonaws.com',
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                'Content-Type': 'application/json'
+            },
             'body': json.dumps({'error': str(e)})
         }
+
